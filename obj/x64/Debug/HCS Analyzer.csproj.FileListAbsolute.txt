@@ -1,0 +1,1 @@
+C:\Work\Software\HCS-Analyzer\bin\x64\Debug\HCSAnalyzer.exe.config

@@ -1,0 +1,2 @@
+C:\Work\HCS-Analyzer\bin\x64\Debug\HCSAnalyzer.exe.config
+C:\Work\HCS-Analyzer\obj\x64\Debug\WindowHCSAnalyzer.cs.csproj.ResolveComReference.cache
