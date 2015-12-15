@@ -211,6 +211,7 @@ namespace HCSAnalyzer
         private void SwitchVizuMode(object sender, EventArgs e)
         {
             GlobalInfo.SwitchVisuMode();
+            //return;
         }
 
         #region DRC management
