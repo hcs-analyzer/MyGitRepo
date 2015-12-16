@@ -20,6 +20,7 @@ using HCSAnalyzer.Classes._3D;
 using HCSAnalyzer.Classes.Base_Classes.GUI;
 using HCSAnalyzer.Classes.Base_Classes.DataStructures;
 using ImageAnalysis;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace HCSAnalyzer.Classes
 {
@@ -388,6 +389,7 @@ namespace HCSAnalyzer.Classes
         public static List<string> ListImageFormats = new List<string>();
 
         #region variables
+        public static List<Chart> LChart = null;
 
         public static List<cDescriptorType> CurrentListDescriptorSelected = null;
 

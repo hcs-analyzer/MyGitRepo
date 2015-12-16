@@ -71,7 +71,7 @@ namespace LibPlateAnalysis
         private int PosY = -1;
         public cListSignature ListSignatures;
         public cListSignature ListPlateBasedDescriptors;
-        private PlateChart AssociatedChart;
+        private Chart AssociatedChart;
 
         private int CurrentDescriptorToDisplay;
 
@@ -837,10 +837,10 @@ namespace LibPlateAnalysis
             return MyImageViewer.GetOutPut();
         }
 
-        public PlateChart BuildChartForClass()
+        public Chart BuildChartForClass()
         {
             if (AssociatedChart != null) AssociatedChart.Dispose();
-            AssociatedChart = new PlateChart();
+            AssociatedChart = new Chart();
 
 
             Series CurrentSeries = new Series("ChartSeries" + PosX + "x" + PosY);
@@ -931,7 +931,7 @@ namespace LibPlateAnalysis
             return AssociatedChart;
         }
 
-        public PlateChart BuildChart(int IdxDescriptor, double[] MinMax)
+        public Chart BuildChart(int IdxDescriptor, double[] MinMax)
         {
             if (cGlobalInfo.IsDisplayClassOnly) return BuildChartForClass();
 
@@ -964,7 +964,9 @@ namespace LibPlateAnalysis
             if (AssociatedChart != null) AssociatedChart.Dispose();
             if (IdxDescriptor >= ListSignatures.Count) return null;
             CurrentDescriptorToDisplay = IdxDescriptor;
-            AssociatedChart = new PlateChart();
+
+
+            AssociatedChart = new Chart();
             Series CurrentSeries = new Series("ChartSeries" + PosX + "x" + PosY);
             CurrentChartArea = new ChartArea("ChartArea" + PosX + "x" + PosY);
 

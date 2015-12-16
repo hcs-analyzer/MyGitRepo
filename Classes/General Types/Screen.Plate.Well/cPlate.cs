@@ -851,6 +851,7 @@ namespace LibPlateAnalysis
             this.DisplayDistribution(ParentScreening.ListDescriptors.GetDescriptorIndex(Descriptor), IsFirstTime, Sender);
         }
 
+       
         void DisplayDistribution(int IdxDescriptor, bool IsFirstTime, object Sender)
         {
             if (ListMinMax == null) this.UpDataMinMax();
@@ -873,8 +874,26 @@ namespace LibPlateAnalysis
                 //int PosScrollX = cGlobalInfo.panelForPlate.HorizontalScroll.Value;
                 //int PosScrollY = cGlobalInfo.panelForPlate.VerticalScroll.Value;
 
+
+
+
                 cGlobalInfo.panelForPlate.Controls.Clear();
-                List<PlateChart> LChart = new List<PlateChart>();
+
+                if (cGlobalInfo.LChart == null) cGlobalInfo.LChart = new List<Chart>();
+                else
+                {
+                    foreach (Chart item in cGlobalInfo.LChart)
+                    {
+                        item.Dispose();
+                    }
+                    cGlobalInfo.LChart.Clear();
+
+                }
+                // LChart.Clear();
+
+                
+
+               //  = new List<PlateChart>();
 
                 if (cGlobalInfo.IsDisplayClassOnly)
                 {
@@ -886,7 +905,7 @@ namespace LibPlateAnalysis
                             if (TempWell == null) continue;
 
                             // Add chart control to the form
-                            LChart.Add(TempWell.BuildChartForClass());
+                            cGlobalInfo.LChart.Add(TempWell.BuildChartForClass());
                         }
 
                     // return;
@@ -919,14 +938,17 @@ namespace LibPlateAnalysis
                             {
                                 cWell TempWell = GetWell(i, j, false);
                                 if (TempWell == null) continue;
-                                LChart.Add(TempWell.BuildChart(IdxDescriptor, MinMax));
+                                cGlobalInfo.LChart.Add(TempWell.BuildChart(IdxDescriptor, MinMax));
                             }
                     }
                 }
                 //System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(delegate()    {  ParentScreening.PanelForPlate.BeginInvoke(new Action(delegate() {            })); }));
                 //thread.Start();
                 if (cGlobalInfo.ViewMode != eViewMode.IMAGE)
-                    cGlobalInfo.panelForPlate.Controls.AddRange(LChart.ToArray());
+                {
+                    cGlobalInfo.panelForPlate.Controls.AddRange(cGlobalInfo.LChart.ToArray());
+
+                }
 
                 //cGlobalInfo.panelForPlate.HorizontalScroll.Value = PosScrollX;
                 //cGlobalInfo.panelForPlate.VerticalScroll.Value = PosScrollY;

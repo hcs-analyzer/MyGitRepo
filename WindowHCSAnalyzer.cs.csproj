@@ -1433,9 +1433,7 @@
     <Compile Include="GUI\FormsForGraphsDisplay\FormToDisplayScreening.Designer.cs">
       <DependentUpon>FormToDisplayScreening.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PlateChart.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\PlateChart.cs" />
     <Compile Include="Controls\PlateTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
