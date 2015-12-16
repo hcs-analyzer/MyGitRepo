@@ -425,7 +425,7 @@ namespace HCSAnalyzer.Classes._3D
 
             cListPoints3D ToReturn = new cListPoints3D();
 
-            int NumPts = SourcePolyData.GetPointData().GetNumberOfTuples();
+            long NumPts = SourcePolyData.GetPointData().GetNumberOfTuples();
 
             for (int i = 0; i < NumPts; i++)
             {
@@ -833,7 +833,7 @@ namespace HCSAnalyzer.Classes._3D
             splineForRadii.SetPoints(PtsForRadii);
             vtkParametricFunctionSource functionSourceForRadii = vtkParametricFunctionSource.New();
             functionSourceForRadii.SetParametricFunction(splineForRadii);
-            functionSourceForRadii.SetUResolution(SplineFactor * PtsForRadii.GetNumberOfPoints());
+            functionSourceForRadii.SetUResolution(SplineFactor *(int) PtsForRadii.GetNumberOfPoints());
             functionSourceForRadii.Update();
 
             //vtkParametricSpline splineForAlpha = vtkParametricSpline.New();
@@ -849,12 +849,12 @@ namespace HCSAnalyzer.Classes._3D
             spline.SetPoints(points);
             vtkParametricFunctionSource functionSource = vtkParametricFunctionSource.New();
             functionSource.SetParametricFunction(spline);
-            functionSource.SetUResolution(SplineFactor * points.GetNumberOfPoints());
+            functionSource.SetUResolution(SplineFactor *(int) points.GetNumberOfPoints());
             functionSource.Update();
 
-            int n = functionSource.GetOutput().GetNumberOfPoints();
+            long n = functionSource.GetOutput().GetNumberOfPoints();
 
-            NumberOfPt = n;
+            NumberOfPt =(int) n;
 
             vtkCellArray lines = vtkCellArray.New();
             lines.InsertNextCell(NumberOfPt);

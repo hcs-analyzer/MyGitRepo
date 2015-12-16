@@ -643,8 +643,8 @@ namespace ImageAnalysis
                 int NumChannels = 0;
                 object ResMeta = null;
 
-                if (IdxName == 0)
-                    this.SingleChannelImage = new cListSingleChannelImage();
+                //if (IdxName == 0)
+                //    this.SingleChannelImage = new cListSingleChannelImage();
 
                 //for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
                 //{
@@ -811,59 +811,28 @@ namespace ImageAnalysis
                         }
                         goto NEXTLOOP;
                     #endregion
-                    #region tif - FreeImage
+                    #region tif - OPENCV
                     case "tif":
-                        if (!FreeImage.IsAvailable())
-                        {
-                            Console.WriteLine("FreeImage.dll seems to be missing. Aborting.");
-                            return;
-                        }
+                      
 
-                        FIMULTIBITMAP dib1 = new FIMULTIBITMAP();
-
-                        dib1 = FreeImage.OpenMultiBitmapEx(CurrentName,true);
-                        //FIBITMAP dib2 = FreeImage.Load(FREE_IMAGE_FORMAT.FIF_TIFF, CurrentName, FREE_IMAGE_LOAD_FLAGS.DEFAULT);
-                        //  BITMAPINFOHEADER BIH = FreeImage.GetInfoHeaderEx(dib);
-                        // uint TagCount = FreeImage.GetMetadataCount(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib1);
-                        int PageCount = (int)FreeImage.GetPageCount(dib1);
+                       
+                        int PageCount = 1;
                         this.Depth = PageCount;
                         NumChannels = 1;
-                        
+
+                        Mat myImage = new Mat(CurrentName, Emgu.CV.CvEnum.LoadImageType.AnyDepth);
 
                         for (int IDxPlane = 0; IDxPlane < PageCount; IDxPlane++)
                         {
-                            FIBITMAP dib = FreeImage.LockPage(dib1, IDxPlane);
-                            //dib = dib2;
-                            // dib = FreeImage.MakeThumbnail(FreeImage.LockPage(dib1, IDxPlane), 400, true);
-
-                            FREE_IMAGE_COLOR_TYPE s = FreeImage.GetColorType(dib);
+                            
                             if (IDxPlane == 0)
                             {
-                                this.Width = (int)FreeImage.GetWidth(dib);
-                                this.Height = (int)FreeImage.GetHeight(dib);
-                                this.Resolution.X = FreeImage.GetResolutionX(dib);
-                                this.Resolution.Y = FreeImage.GetResolutionY(dib);
-
-                                NumBitsPerPixel = (int)FreeImage.GetBPP(dib);
-                             //   BITMAPINFO aaaaa=  FreeImage.GetInfoEx(dib);
-                                BITMAPINFO BI = FreeImage.GetInfoEx(dib);
-
-                                uint aaaa= FreeImage.GetColorsUsed(dib);
-
-                                FITAG tag;
-                                uint TagCount = FreeImage.GetMetadataCount(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib);
-                                FIMETADATA fMeta = FreeImage.FindFirstMetadata(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib, out tag);
-                                string myTagDesc = FreeImage.GetTagDescription(tag);
-                                string myTag = FreeImage.TagToString(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, tag, 0);
-                                Console.WriteLine(myTagDesc + " :" + myTag);
-
-                                while (FreeImage.FindNextMetadata(fMeta, out tag))
-                                {
-                                    myTag = FreeImage.TagToString(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, tag, 0);
-                                    myTagDesc = FreeImage.GetTagDescription(tag);
-                                    Console.WriteLine(myTagDesc + " :" + myTag);
-
-                                }
+                                this.Width = myImage.Width;
+                                this.Height = myImage.Height;
+                                this.Resolution.X = 1;
+                                this.Resolution.Y = 1;
+                                NumBitsPerPixel = 16;
+                              
                                 for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
                                 {
                                     cSingleChannelImage TmpChannelImage = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
@@ -874,57 +843,15 @@ namespace ImageAnalysis
                                     if (ListImageMetaInfo[IdxChannel].ResolutionX != -1) this.Resolution.X = ListImageMetaInfo[IdxChannel].ResolutionX;
                                     if (ListImageMetaInfo[IdxChannel].ResolutionY != -1) this.Resolution.Y = ListImageMetaInfo[IdxChannel].ResolutionY;
                                     if (ListImageMetaInfo[IdxChannel].ResolutionZ != -1) this.Resolution.Z = ListImageMetaInfo[IdxChannel].ResolutionZ;
+                                    Image<Gray, float> myImage2 = myImage.ToImage<Gray, float>();
 
-                                    if (ListImageMetaInfo[IdxChannel].PositionX != -1) this.Position.X = ListImageMetaInfo[IdxChannel].PositionX;
-                                    if (ListImageMetaInfo[IdxChannel].PositionY != -1) this.Position.Y = ListImageMetaInfo[IdxChannel].PositionY;
-                                    if (ListImageMetaInfo[IdxChannel].PositionZ != -1) this.Position.Z = ListImageMetaInfo[IdxChannel].PositionZ;
-
+                                    TmpChannelImage.SetNewDataFromOpenCV(myImage2);
                                     this.SingleChannelImage.Add(TmpChannelImage);
                                 }
                             }
 
-                            rgbValues = new byte[this.Width * this.Height * NumChannels];
-
-                            if (NumBitsPerPixel == 16)
-                            {
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                    for (int i = 0; i < this.Height; i++)
-                                    {
-                                        // Get scanline from the bottom part of the bitmap
-                                        Scanline<FI16RGB565> scanline = new Scanline<FI16RGB565>(dib, i);
-
-                                        FI16RGB565[] rgbtBottom = scanline.Data;
-                                        for (int IdxPix = 0; IdxPix < rgbtBottom.Length; IdxPix++)
-                                        {
-                                            this.SingleChannelImage[IdxChannel + ChannelStart].Data[IdxPix + (this.Height - i - 1) * this.Width] = ((rgbtBottom[IdxPix].Red * 31) / 255 << 11) + ((rgbtBottom[IdxPix].Green * 63) / 255 << 5) + (rgbtBottom[IdxPix].Blue * 31) / 255;
-
-                                            //(rgbtBottom[IdxPix].Red << 10) + (rgbtBottom[IdxPix].Green << 5) + rgbtBottom[IdxPix].Blue;
-
-                                        }
-                                    }
-                            }
-                            else
-                            {
-                                IntPtr ip = FreeImage.GetBits(dib);
-
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                    for (int i = 0; i < this.Height; i++)
-                                    {
-                                        for (int IdxPix = 0; IdxPix < this.Width; IdxPix++)
-                                        {
-                                            this.SingleChannelImage[IdxChannel + ChannelStart].Data[IdxPix + (this.Height - i - 1) * this.Width + this.Width * this.Height * IDxPlane] =
-                                                System.Runtime.InteropServices.Marshal.ReadByte(ip, IdxPix + this.Width * i);
-
-                                        }
-                                    }
-                            }
-
-                            if (!dib.IsNull)
-                                FreeImage.Unload(dib);
-
-                            // Make sure to set the handle to null so that it is clear that the handle is not pointing to a bitmap.
-                            dib.SetNull();
-
+                            
+                            
                         }
 
                         this.Name = CurrentName;
@@ -932,50 +859,8 @@ namespace ImageAnalysis
                         //this.ImageSize = SliceSize * Depth;
 
                         goto NEXTLOOP;
-
-                        //FreeImage.FlipVertical(LoadedImage);
-                        ////Image CurrentMSImage = (Image)FreeImage.GetBitmap(LoadedImage);
-                        //FreeImageAPI.FIBITMAP Converted24Im = FreeImage.ConvertToGreyscale(LoadedImage);
-                        //IntPtr Pt =  FreeImage.GetBits(LoadedImage);
-
-                        //int bytes = Width*Height*3;
-                        //byte[] rgbValues = new byte[bytes];
-
-                        //// Copy the RGB values into the array.
-                        //System.Runtime.InteropServices.Marshal.Copy(Pt, rgbValues, 0,bytes);
-                        //FormForImageDisplay NewDispl = new FormForImageDisplay();
-                        //NewDispl.pictureBoxForImage.Image = (Image)FreeImage.GetBitmap(LoadedImage);
-                        //NewDispl.Show();
-
-
-                        //  this.Data = new float[this.NumChannels][];
-                        //if (IdxName == 0)
-                        //    this.SingleChannelImage = new cListSingleChannelImage();
-
-
-
-                        //int GlobalIdx = 0;
-                        //cSingleChannelImage CI = new cSingleChannelImage(this.Width * this.Height * this.Depth);
-                        //CI.Data[0] = 10;
-
-                        //            float Value;
-                        //    int PixIdx = 0;
-                        //    for (int IdxZ = 0; IdxZ < this.Depth; IdxZ++)
-                        //        for (int IdxY = 0; IdxY < this.Height; IdxY++)
-                        //            for (int IdxX = 0; IdxX < this.Width; IdxX++)
-                        //            {
-                        //                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                        //                {
-                        //                    Value = 0;
-                        //                    for (int i = 0; i < NumBytePerPixel; i++)
-                        //                        Value += (rgbValues[NumBytePerPixel * PixIdx + i + IdxChannel * this.SliceSize * this.Depth] << (i * 8));
-
-                        //                    this.SingleChannelImage[IdxChannel + ChannelStart].Data[PixIdx] = Value;
-                        //                }
-                        //                PixIdx++;
-                        //            }
-                        //    ChannelStart += NumChannels;
-                        //}
+                       
+                  
 
 
 
@@ -1211,37 +1096,37 @@ namespace ImageAnalysis
                 //int GlobalIdx = 0;
                 //cSingleChannelImage CI = new cSingleChannelImage(this.Width * this.Height * this.Depth);
                 //CI.Data[0] = 10;
-                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                {
-                    cSingleChannelImage TmpChannel = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
+                //for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
+                //{
+                //    cSingleChannelImage TmpChannel = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
 
-                    if (IdxChannel < ListImageMetaInfo.Count)
-                    {
-                        if (ListImageMetaInfo[IdxChannel].Name != "") TmpChannel.Name = ListImageMetaInfo[IdxChannel].Name;
-                        if (ListImageMetaInfo[IdxChannel].ResolutionX != 0) this.Resolution.X = ListImageMetaInfo[IdxChannel].ResolutionX;
-                        if (ListImageMetaInfo[IdxChannel].ResolutionY != 0) this.Resolution.Y = ListImageMetaInfo[IdxChannel].ResolutionY;
-                        if (ListImageMetaInfo[IdxChannel].ResolutionZ != 0) this.Resolution.Z = ListImageMetaInfo[IdxChannel].ResolutionZ;
-                    }
+                //    if (IdxChannel < ListImageMetaInfo.Count)
+                //    {
+                //        if (ListImageMetaInfo[IdxChannel].Name != "") TmpChannel.Name = ListImageMetaInfo[IdxChannel].Name;
+                //        if (ListImageMetaInfo[IdxChannel].ResolutionX != 0) this.Resolution.X = ListImageMetaInfo[IdxChannel].ResolutionX;
+                //        if (ListImageMetaInfo[IdxChannel].ResolutionY != 0) this.Resolution.Y = ListImageMetaInfo[IdxChannel].ResolutionY;
+                //        if (ListImageMetaInfo[IdxChannel].ResolutionZ != 0) this.Resolution.Z = ListImageMetaInfo[IdxChannel].ResolutionZ;
+                //    }
 
-                    this.SingleChannelImage.Add(TmpChannel);
+                //    this.SingleChannelImage.Add(TmpChannel);
 
-                }
+                //}
 
-                int PixIdx = 0;
-                for (int IdxZ = 0; IdxZ < this.Depth; IdxZ++)
-                    for (int IdxY = 0; IdxY < this.Height; IdxY++)
-                        for (int IdxX = 0; IdxX < this.Width; IdxX++)
-                        {
-                            for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                            {
-                                Value = 0;
-                                for (int i = 0; i < NumBytePerPixel; i++)
-                                    Value += (rgbValues[NumBytePerPixel * PixIdx + i + IdxChannel * this.SliceSize() * this.Depth] << (i * 8));
+                //int PixIdx = 0;
+                //for (int IdxZ = 0; IdxZ < this.Depth; IdxZ++)
+                //    for (int IdxY = 0; IdxY < this.Height; IdxY++)
+                //        for (int IdxX = 0; IdxX < this.Width; IdxX++)
+                //        {
+                //            for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
+                //            {
+                //                Value = 0;
+                //                for (int i = 0; i < NumBytePerPixel; i++)
+                //                    Value += (rgbValues[NumBytePerPixel * PixIdx + i + IdxChannel * this.SliceSize() * this.Depth] << (i * 8));
 
-                                this.SingleChannelImage[IdxChannel + ChannelStart].Data[PixIdx] = Value;
-                            }
-                            PixIdx++;
-                        }
+                //                this.SingleChannelImage[IdxChannel + ChannelStart].Data[PixIdx] = Value;
+                //            }
+                //            PixIdx++;
+                //        }
 
             NEXTLOOP: ;
 
@@ -1249,7 +1134,7 @@ namespace ImageAnalysis
             }
 
            // if (cGlobalInfo.BufferedImage == null)
-                cGlobalInfo.BufferedImage = this;
+               // cGlobalInfo.BufferedImage = this;
 
 
             /*

@@ -532,3 +532,7 @@ J:\Github_HCS\MyGitRepo\bin\x86\Release\HCSAnalyzer.exe.config
 J:\Github_HCS\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.ResolveComReference.cache
 J:\Github_HCS\MyGitRepo\obj\x86\Release\HCSAnalyzer.exe
 J:\Github_HCS\MyGitRepo\obj\x86\Release\HCSAnalyzer.pdb
+F:\HCSA_GIT\MyGitRepo\bin\x86\Release\HCSAnalyzer.exe.config
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.ResolveComReference.cache
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.exe
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.pdb

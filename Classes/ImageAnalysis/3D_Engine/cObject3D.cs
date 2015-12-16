@@ -272,7 +272,7 @@ namespace HCSAnalyzer.Classes._3D
             {
                 //vtk_Actor.GetProperty().SetPointSize((float)Scale * 10.0f);
                 c3DElevationMap TmpMap = (c3DElevationMap)(this);
-                int NumPts = TmpMap.points.GetNumberOfPoints();
+                long NumPts = TmpMap.points.GetNumberOfPoints();
                 for (int i = 0; i < NumPts; i++)
                 {
                     double[] CurrentValue = TmpMap.points.GetPoint(i);

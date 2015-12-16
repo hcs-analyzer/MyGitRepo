@@ -16,8 +16,8 @@ namespace ImageAnalysisFiltering
 {
     public partial class cImageGeometricResize : c2DImageFilter
     {
-        public INTER InterpolationType = INTER.CV_INTER_NN;
-     //   public double Scale = 0.5;
+        public Inter InterpolationType = Inter.Nearest;
+        //   public double Scale = 0.5;
 
         public cImageGeometricResize()
         {

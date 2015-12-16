@@ -167,7 +167,7 @@ namespace HCSAnalyzer.Classes._3D
 
                     //the coordinates of the closest point will be returned here
                     double closestPointDist2 = 0;
-                    int cellId = 0;
+                    long cellId = 0;
                     int subId = 0;
                     cellLocator.FindClosestPoint(unmanagedPointer, unmanagedPointer1, ref cellId, ref subId, ref closestPointDist2);
 

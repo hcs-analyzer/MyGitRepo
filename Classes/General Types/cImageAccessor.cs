@@ -665,9 +665,11 @@ namespace HCSAnalyzer.Classes.General_Types
                 }
 
                 IEnumerable<string> ListDir = null;
+                string ListDir2 = "";
                 try
                 {
-                    ListDir = Directory.EnumerateDirectories(InitialPath, WellObject.AssociatedPlate.GetName(), SearchOption.AllDirectories);
+                    //ListDir = Directory.EnumerateDirectories(InitialPath, WellObject.AssociatedPlate.GetName(), SearchOption.AllDirectories);
+                    ListDir2 = InitialPath + "\\" + WellObject.GetShortInfo().Split('[')[1].Split(']')[0];
                 }
                 catch (Exception e)
                 {
@@ -675,10 +677,10 @@ namespace HCSAnalyzer.Classes.General_Types
                     return null;
                 }
 
-                string NewDir;
+                string NewDir2;
                 try
                 {
-                    NewDir = ListDir.ElementAt(0);
+                    NewDir2 = ListDir2;
                 }
                 catch (Exception)
                 {
@@ -700,7 +702,7 @@ namespace HCSAnalyzer.Classes.General_Types
 
                 Name += "*Z01C*.tif";
 
-                string[] ListChannels = Directory.GetFiles(NewDir, Name, SearchOption.TopDirectoryOnly);
+                List<string> ListChannels = Directory.GetFiles(NewDir2, Name, SearchOption.AllDirectories).ToList();
                 //  if(NumberOfChannels>ListChannels.Count()) NumberOfChannels = ListChannels.Count();
                 NumberOfChannels = ListChannels.Count();
 
@@ -720,7 +722,7 @@ namespace HCSAnalyzer.Classes.General_Types
                 }
 
 
-                string XMLFile = NewDir + "\\MeasurementDetail.mrf";
+                string XMLFile = NewDir2 + "\\MeasurementDetail.mrf";
 
                 if (File.Exists(XMLFile))
                 {

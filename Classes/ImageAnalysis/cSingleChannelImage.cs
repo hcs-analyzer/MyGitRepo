@@ -177,7 +177,56 @@ namespace ImageAnalysis
             }
         }
 
+        //public bool SetNewDataFromOpenCV(Image<Gray, float> CVImage)
+        //{
+        //    if (CVImage.Width * CVImage.Height != this.Data.Length) return false;
+
+        //    for (int j = 0; j < CVImage.Height; j++)
+        //        for (int i = 0; i < CVImage.Width; i++)
+        //            this.Data[i + j * this.Width] = CVImage.Data[j, i, 0];
+        //    return true;
+        //}
+
         public bool SetNewDataFromOpenCV(Image<Gray, float> CVImage)
+        {
+            if (CVImage.Width * CVImage.Height != this.Data.Length) return false;
+
+            unsafe
+            {
+                MIplImage ss = CVImage.MIplImage;
+
+                for (int j = 0; j < ss.Height; j++)
+                {
+                    IntPtr ptr = ss.ImageData + j * ss.WidthStep;
+                    for (int i = 0; i < ss.Width; i++)
+                    {
+                        this.Data[i + j * this.Width] = ((float*)(ptr))[i];
+                    }
+                }
+
+
+
+            }
+
+
+            return true;
+        }
+
+        public bool SetNewDataFromOpenCV(Image<Gray, byte> CVImage)
+        {
+            if (CVImage.Width * CVImage.Height != this.Data.Length) return false;
+
+            //for (int j = 0; j < CVImage.Height; j++)
+            //    for (int i = 0; i < CVImage.Width; i++)
+            //        this.Data[i + j * this.Width] = CVImage.Data[j, i, 0];
+            // byte[,,] data = CVImage.Data;
+
+            for (int j = 0; j < CVImage.Height; j++)
+                for (int i = 0; i < CVImage.Width; i++)
+                    this.Data[i + j * this.Width] = CVImage.Data[j, i, 0];
+            return true;
+        }
+        public bool SetNewDataFromOpenCV(Image<Gray, UInt16> CVImage)
         {
             if (CVImage.Width * CVImage.Height != this.Data.Length) return false;
 
