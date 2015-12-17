@@ -1,5 +1,5 @@
 using System.Windows.Forms;
-//using HCSAnalyzer.GUI;
+using HCSAnalyzer.GUI;
 namespace HCSAnalyzer
 {
     partial class HCSAnalyzer

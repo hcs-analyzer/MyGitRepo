@@ -49,7 +49,7 @@ namespace LibPlateAnalysis
 
         public void SetNewColor(Color C)
         {
-            if(this.CurrentChartArea!=null)
+            if (this.CurrentChartArea != null)
                 this.CurrentChartArea.BackColor = C;
         }
 
@@ -71,7 +71,7 @@ namespace LibPlateAnalysis
         private int PosY = -1;
         public cListSignature ListSignatures;
         public cListSignature ListPlateBasedDescriptors;
-        private PlateChart AssociatedChart;
+        private Chart AssociatedChart;
 
         private int CurrentDescriptorToDisplay;
 
@@ -79,10 +79,10 @@ namespace LibPlateAnalysis
         List<cxWellClass> ListClass = new List<cxWellClass>();
 
         public string SQLTableName = "";
-       // public string Name = "";
+        // public string Name = "";
         public string Info = "";
 
-       // public static cScreening Parent;
+        // public static cScreening Parent;
         public cPlate AssociatedPlate;
 
         FormForPathway ListP = new FormForPathway();
@@ -266,7 +266,7 @@ namespace LibPlateAnalysis
 
         public cWell(cListSignature ListDesc, int Col, int Row, cScreening screenParent, cPlate CurrentPlate)
         {
-           // Parent = screenParent;
+            // Parent = screenParent;
             this.AssociatedPlate = CurrentPlate;
 
             this.ListSignatures = new cListSignature();
@@ -290,7 +290,7 @@ namespace LibPlateAnalysis
 
         public cWell(string FileName, cScreening screenParent, cPlate CurrentPlate)
         {
-           // Parent = screenParent;
+            // Parent = screenParent;
             this.AssociatedPlate = CurrentPlate;
 
             StreamReader sr = new StreamReader(FileName);
@@ -564,7 +564,7 @@ namespace LibPlateAnalysis
         /// <returns>The color</returns>
         public Color GetClassColor()
         {
-            if ((this.GetCurrentClassIdx() == -1) || (this.GetCurrentClassIdx()>=cGlobalInfo.ListWellClasses.Count))
+            if ((this.GetCurrentClassIdx() == -1) || (this.GetCurrentClassIdx() >= cGlobalInfo.ListWellClasses.Count))
             {
                 return Color.FromArgb(14, 35, 61);
             }
@@ -597,7 +597,7 @@ namespace LibPlateAnalysis
 
                 string V = "n.a.";
                 if (P.GetValue() != null)
-                   V = P.GetValue().ToString();
+                    V = P.GetValue().ToString();
 
                 base.ShortInfo += " - " + item.Name + " [" + V + "]";
             }
@@ -699,16 +699,16 @@ namespace LibPlateAnalysis
         {
             if (IsIncludeClass)
             {
-            this.AssociatedPlate.DBConnection = new cDBConnection(this.AssociatedPlate, this.SQLTableName);
+                this.AssociatedPlate.DBConnection = new cDBConnection(this.AssociatedPlate, this.SQLTableName);
 
-            cExtendedTable ET = this.AssociatedPlate.DBConnection.GetWellValues(this, ListDescriptorTypes, ListPhenotypesSelected);
-            cExtendedTable ET2 = this.AssociatedPlate.DBConnection.GetWellPhenotypeId(this,ListPhenotypesSelected);
+                cExtendedTable ET = this.AssociatedPlate.DBConnection.GetWellValues(this, ListDescriptorTypes, ListPhenotypesSelected);
+                cExtendedTable ET2 = this.AssociatedPlate.DBConnection.GetWellPhenotypeId(this, ListPhenotypesSelected);
 
-            ET.Add(new cExtendedList("Phenotype"));
+                ET.Add(new cExtendedList("Phenotype"));
 
-            ET[1].AddRange(ET2[0]);
+                ET[1].AddRange(ET2[0]);
 
-            this.AssociatedPlate.DBConnection.CloseConnection();
+                this.AssociatedPlate.DBConnection.CloseConnection();
 
                 return ET;
 
@@ -774,20 +774,20 @@ namespace LibPlateAnalysis
 
         public cExtendedControl BuildChartForImage()
         {
-           // Panel TmpPanel = new Panel();
+            // Panel TmpPanel = new Panel();
             int Field = 0;
 
             cViewerImage MyImageViewer = new cViewerImage();
 
             cGetImageFromWells GIFW = new cGetImageFromWells();
             GIFW.SetInputData(new cListWells(this));
-            if(!GIFW.Run().IsSucceed) return null;
+            if (!GIFW.Run().IsSucceed) return null;
 
             MyImageViewer.SetInputData(GIFW.GetOutPut());
 
             MyImageViewer.Run();
 
-            
+
 
 
             int GutterSize = (int)cGlobalInfo.OptionsWindow.FFAllOptions.numericUpDownGutter.Value;
@@ -808,7 +808,7 @@ namespace LibPlateAnalysis
 
             //PB.BorderStyle = BorderStyle.None;
             //PB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            
+
             //PB.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AssociatedChart_MouseClick);
             //PB.MouseDown += new MouseEventHandler(AssociatedChart_MouseDown);
             //PB.AllowDrop = true;
@@ -823,12 +823,12 @@ namespace LibPlateAnalysis
 
                 this.Thumbnail = GIFWT.GetOutPut().GetBitmap(1, null, null);
             }
-          //  PB.Image = this.Thumbnail;
+            //  PB.Image = this.Thumbnail;
 
-           // TmpPanel.Controls.Add(PB);
+            // TmpPanel.Controls.Add(PB);
 
 
-          
+
             //TmpPanel.
             //.GetToolTipText += new System.EventHandler<ToolTipEventArgs>(this.AssociatedChart_GetToolTipText);
 
@@ -837,10 +837,10 @@ namespace LibPlateAnalysis
             return MyImageViewer.GetOutPut();
         }
 
-        public PlateChart BuildChartForClass()
+        public Chart BuildChartForClass()
         {
             if (AssociatedChart != null) AssociatedChart.Dispose();
-            AssociatedChart = new PlateChart();
+            AssociatedChart = new Chart();
 
 
             Series CurrentSeries = new Series("ChartSeries" + PosX + "x" + PosY);
@@ -898,10 +898,10 @@ namespace LibPlateAnalysis
 
                         if (WellPropertyType.Name == "Well Class")
                         {
-                            if((int)CurrentValue==-1)
-                            MainLegend.Text = "n.a.";
+                            if ((int)CurrentValue == -1)
+                                MainLegend.Text = "n.a.";
                             else
-                            MainLegend.Text = cGlobalInfo.ListWellClasses[(int)CurrentValue].Name;
+                                MainLegend.Text = cGlobalInfo.ListWellClasses[(int)CurrentValue].Name;
                         }
                         else
                             MainLegend.Text = CurrentValue.ToString();
@@ -913,12 +913,12 @@ namespace LibPlateAnalysis
                 MainLegend.Docking = Docking.Bottom;
                 MainLegend.Font = new System.Drawing.Font("Arial", cGlobalInfo.SizeHistoWidth / 10 + 1, FontStyle.Regular);
                 MainLegend.BackColor = MainLegend.BackImageTransparentColor;
-                MainLegend.ForeColor = cGlobalInfo.OptionsWindow.FFAllOptions.panelFontColor.BackColor; 
+                MainLegend.ForeColor = cGlobalInfo.OptionsWindow.FFAllOptions.panelFontColor.BackColor;
                 AssociatedChart.Titles.Add(MainLegend);
             }
 
-           // AssociatedChart.Update();
-           // AssociatedChart.Show();
+            // AssociatedChart.Update();
+            // AssociatedChart.Show();
             AssociatedChart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AssociatedChart_MouseClick);
             AssociatedChart.MouseDown += new MouseEventHandler(AssociatedChart_MouseDown);
 
@@ -931,7 +931,7 @@ namespace LibPlateAnalysis
             return AssociatedChart;
         }
 
-        public PlateChart BuildChart(int IdxDescriptor, double[] MinMax)
+        public Chart BuildChart(int IdxDescriptor, double[] MinMax)
         {
             if (cGlobalInfo.IsDisplayClassOnly) return BuildChartForClass();
 
@@ -964,7 +964,9 @@ namespace LibPlateAnalysis
             if (AssociatedChart != null) AssociatedChart.Dispose();
             if (IdxDescriptor >= ListSignatures.Count) return null;
             CurrentDescriptorToDisplay = IdxDescriptor;
-            AssociatedChart = new PlateChart();
+
+
+            AssociatedChart = new Chart();
             Series CurrentSeries = new Series("ChartSeries" + PosX + "x" + PosY);
             CurrentChartArea = new ChartArea("ChartArea" + PosX + "x" + PosY);
 
@@ -1074,10 +1076,10 @@ namespace LibPlateAnalysis
 
                         if (WellPropertyType.Name == "Well Class")
                         {
-                           if (((int)CurrentValue<cGlobalInfo.ListWellClasses.Count) && ((int)CurrentValue >= 0))
+                            if (((int)CurrentValue < cGlobalInfo.ListWellClasses.Count) && ((int)CurrentValue >= 0))
                                 MainLegend.Text = cGlobalInfo.ListWellClasses[(int)CurrentValue].Name;
-                           else
-                               MainLegend.Text = "n.a.";
+                            else
+                                MainLegend.Text = "n.a.";
 
                         }
                         else
@@ -1088,7 +1090,7 @@ namespace LibPlateAnalysis
 
                     MainLegend.Docking = Docking.Bottom;
                     MainLegend.Font = new System.Drawing.Font("Arial", cGlobalInfo.SizeHistoWidth / 10 + 1, FontStyle.Bold);
-                    MainLegend.ForeColor = cGlobalInfo.OptionsWindow.FFAllOptions.panelFontColor.BackColor; 
+                    MainLegend.ForeColor = cGlobalInfo.OptionsWindow.FFAllOptions.panelFontColor.BackColor;
                     AssociatedChart.Titles.Add(MainLegend);
 
                 }
@@ -1251,7 +1253,7 @@ namespace LibPlateAnalysis
                 int ClassSelected = cGlobalInfo.CurrentScreening.GetSelectionType();
                 if (ClassSelected == -2) return;
 
-                if ( cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked)// !cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
+                if (cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked)// !cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
                 {
                     if (ClassSelected == -1)
                     {
@@ -1365,7 +1367,7 @@ namespace LibPlateAnalysis
             //// contextMenuStrip.Show(Control.MousePosition);
             //ToolStripMenuItem_Info.Click += new System.EventHandler(this.DisplayInfo);
 
-             if (!cGlobalInfo.OptionsWindow.radioButtonImageAccessNone.Checked)
+            if (!cGlobalInfo.OptionsWindow.radioButtonImageAccessNone.Checked)
             {
                 ToolStripMenuItem ToolStripMenuItem_Image = new ToolStripMenuItem("Image");
                 ToolStripMenuItem_Image.Click += new System.EventHandler(this.ToolStripMenuItem_Image);
@@ -2004,7 +2006,7 @@ namespace LibPlateAnalysis
                 IFW.ListProperties.FindByName("Field").IsGUIforValue = true;
             if (IFW.Run().IsSucceed == false)
                 return;
-             
+
             IV.SetInputData(IFW.GetOutPut());
             IV.Title = this.GetShortInfo() + " - Field: " + ((int)(IFW.ListProperties.FindByName("Field").GetValue()));
             IV.IsDisplayScale = true;
@@ -2018,14 +2020,14 @@ namespace LibPlateAnalysis
             NewWindow.Text = this.GetShortInfo();
 
             cExtendedTable EL = this.GetAverageValuesList(true);
-            
+
             cViewerTable VT = new cViewerTable();
             VT.SetInputData(EL);
             VT.Run();
             cExtendedControl EXT = VT.GetOutPut();
             EXT.Width = NewWindow.panelForDescValues.Width;
             EXT.Height = NewWindow.panelForDescValues.Height;
-            
+
             NewWindow.panelForDescValues.Controls.Add(VT.GetOutPut());
 
             NewWindow.textBoxName.Text = GetCpdName();
@@ -2162,7 +2164,7 @@ namespace LibPlateAnalysis
         public cViewerStackedHistogram GetViewerStackedHistogram(cDescriptorType DT)
         {
             cListWells LW = new cListWells(this);
-            return LW.GetSingleCellStackedHisto(DT,null);
+            return LW.GetSingleCellStackedHisto(DT, null);
         }
 
         private void DisplayInfo(object sender, EventArgs e)

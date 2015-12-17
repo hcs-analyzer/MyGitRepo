@@ -20,6 +20,7 @@ using HCSAnalyzer.Classes._3D;
 using HCSAnalyzer.Classes.Base_Classes.GUI;
 using HCSAnalyzer.Classes.Base_Classes.DataStructures;
 using ImageAnalysis;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace HCSAnalyzer.Classes
 {
@@ -132,7 +133,7 @@ namespace HCSAnalyzer.Classes
 
         #endregion
     }
-   
+
     public class cListGroupInfo
     {
         Random RND = new Random();
@@ -143,7 +144,7 @@ namespace HCSAnalyzer.Classes
         {
             if (IdxGroup >= ListColors.Count)
             {
-                int MissingColors = IdxGroup-ListColors.Count+1;
+                int MissingColors = IdxGroup - ListColors.Count + 1;
                 for (int i = 0; i < MissingColors; i++)
                 {
                     ListColors.Add(Color.FromArgb((int)(RND.NextDouble() * 255), (int)(RND.NextDouble() * 255), (int)(RND.NextDouble() * 255)));
@@ -157,7 +158,7 @@ namespace HCSAnalyzer.Classes
 
     public class cListWellClasses : List<cWellClassType>
     {
-        private Color[] ColorForClass = new Color[] { 
+        private Color[] ColorForClass = new Color[] {
             Color.FromArgb(136,17,17),
             Color.FromArgb(21,88,140),
             Color.FromArgb(51,102,68),
@@ -194,7 +195,7 @@ namespace HCSAnalyzer.Classes
                 LUTToReturn[i] = new byte[ColorForClass.Length];
                 for (int j = 0; j < LUTToReturn[i].Length; j++)
                 {
-                    if(i==0)
+                    if (i == 0)
                         LUTToReturn[i][j] = ColorForClass[j].R;
                     else if (i == 1)
                         LUTToReturn[i][j] = ColorForClass[j].G;
@@ -203,9 +204,9 @@ namespace HCSAnalyzer.Classes
 
                 }
             }
-                    //public byte[][] LUT_JET = {new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,32,48,64,80,96,112,128,143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128},
-        //                        new byte[]{0,0,0,0,0,0,0,0,16,32,48,64,80,96,112,128,143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128,112,96,80,64,48,32,16,0,0,0,0,0,0,0,0,0},
-        //                        new byte[]{143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128,112,96,80,64,48,32,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+            //public byte[][] LUT_JET = {new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,32,48,64,80,96,112,128,143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128},
+            //                        new byte[]{0,0,0,0,0,0,0,0,16,32,48,64,80,96,112,128,143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128,112,96,80,64,48,32,16,0,0,0,0,0,0,0,0,0},
+            //                        new byte[]{143,159,175,191,207,223,239,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,239,223,207,191,175,159,143,128,112,96,80,64,48,32,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
             return LUTToReturn;
         }
@@ -215,12 +216,12 @@ namespace HCSAnalyzer.Classes
 
     public class cListCellularPhenotypes : List<cCellularPhenotype>
     {
-        private Color[] ColorForClass = new Color[] { 
-            Color.FromArgb(57,40,57), 
+        private Color[] ColorForClass = new Color[] {
+            Color.FromArgb(57,40,57),
             Color.FromArgb(204,85,17),
             Color.FromArgb(102,160,37),
             Color.FromArgb(255,140,173),
-            Color.FromArgb(94,79,22), 
+            Color.FromArgb(94,79,22),
             Color.FromArgb(182,166,137),
             Color.FromArgb(210,199,184),
             Color.FromArgb(108,136,144),
@@ -246,7 +247,7 @@ namespace HCSAnalyzer.Classes
         }
     }
 
-    public class  cLUTProcess
+    public class cLUTProcess
     {
         byte[][] CurrentLUT;
 
@@ -257,7 +258,7 @@ namespace HCSAnalyzer.Classes
 
         public Color GetColor(int IdxColor)
         {
-            return Color.FromArgb(this.CurrentLUT[0][IdxColor],this.CurrentLUT[1][IdxColor],this.CurrentLUT[2][IdxColor]);
+            return Color.FromArgb(this.CurrentLUT[0][IdxColor], this.CurrentLUT[1][IdxColor], this.CurrentLUT[2][IdxColor]);
         }
 
         public int GetNumberOfColors()
@@ -276,7 +277,7 @@ namespace HCSAnalyzer.Classes
         {
             public cSystemInfo()
             {
-                this.ApplicationFolder =  Directory.GetCurrentDirectory();
+                this.ApplicationFolder = Directory.GetCurrentDirectory();
 
             }
 
@@ -287,10 +288,10 @@ namespace HCSAnalyzer.Classes
                 string ToReturn = "";
 
                 #region General info
-                ToReturn += "Application Directory: " + this.ApplicationFolder+"\n";
-                
+                ToReturn += "Application Directory: " + this.ApplicationFolder + "\n";
+
                 ToReturn += "System: ";
-                if(IntPtr.Size==4)
+                if (IntPtr.Size == 4)
                     ToReturn += "32 bits\n";
                 else if (IntPtr.Size == 8)
                     ToReturn += "64 bits\n";
@@ -317,12 +318,12 @@ namespace HCSAnalyzer.Classes
 
                 #region VTK engine
                 ToReturn += PropSeparator + "VTK engine:\n\n";
-                ToReturn += " Version: " + Kitware.VTK.vtkVersion.GetVTKVersion() +"\n";
+                ToReturn += " Version: " + Kitware.VTK.vtkVersion.GetVTKVersion() + "\n";
                 #endregion
 
                 //#region Accord engine
                 //Assembly assembly = Assembly.LoadFrom("Accord.dll");
-                
+
                 //Version ver = assembly.GetName().Version;
 
                 //ToReturn += PropSeparator + "Accord.NET engine:\n\n";
@@ -371,9 +372,9 @@ namespace HCSAnalyzer.Classes
                 //#endregion
 
                 return ToReturn;
-            
+
             }
-            
+
             string ApplicationFolder;
 
 
@@ -388,6 +389,7 @@ namespace HCSAnalyzer.Classes
         public static List<string> ListImageFormats = new List<string>();
 
         #region variables
+        public static List<Chart> LChart = null;
 
         public static List<cDescriptorType> CurrentListDescriptorSelected = null;
 
@@ -433,7 +435,7 @@ namespace HCSAnalyzer.Classes
         /// <param name="WindowHCSAnalyzer">Parent Form</param>
         public cGlobalInfo(HCSAnalyzer WindowHCSAnalyzer)
         {
-           // cComponent.GlobalInfo = this;
+            // cComponent.GlobalInfo = this;
 
             ListWellClasses = new cListWellClasses(this);
             ListCellularPhenotypes = new cListCellularPhenotypes();
@@ -463,7 +465,7 @@ namespace HCSAnalyzer.Classes
 
             //   this.ListWellPropertyType.AddNewType(new cPropertyType("Time Point", eDataType.TIME));
 
-            
+
 
             cPropertyType WellClassProperty = new cPropertyType("Well Class", eDataType.INTEGER);
             WellClassProperty.Min = -1;
@@ -518,7 +520,7 @@ namespace HCSAnalyzer.Classes
             else if (OptionsWindow.radioButtonImageAccessCV7000.Checked)
                 cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.CV7000;
             else if (OptionsWindow.radioButtonImageAccessBuiltIn.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.BUILTIN;  
+                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.BUILTIN;
             else if (OptionsWindow.radioButtonImageAccessBuiltIn.Checked)
                 cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.KINETIC;
             else if (OptionsWindow.radioButtonImageAccessNone.Checked)
@@ -528,8 +530,8 @@ namespace HCSAnalyzer.Classes
                 cGlobalInfo.GUIPlateLUT = new cGUIPlateLUT();
 
 
-          //  REngine.SetEnvironmentVariables();
-           // RStat_engine = REngine.GetInstance();
+            //  REngine.SetEnvironmentVariables();
+            // RStat_engine = REngine.GetInstance();
 
 
             cGlobalInfo.CtrlNeg = cGlobalInfo.ListWellClasses[0];
@@ -548,7 +550,7 @@ namespace HCSAnalyzer.Classes
         }
         #endregion
 
-       // static List<c3DNewWorld> List3DWorlds = new List<c3DNewWorld>();
+        // static List<c3DNewWorld> List3DWorlds = new List<c3DNewWorld>();
         public static void AddNewWorld(c3DNewWorld ToBeAdded)
         {
             if (ToBeAdded.Name == null)
@@ -563,7 +565,7 @@ namespace HCSAnalyzer.Classes
 
             NewItem.Tag = ToBeAdded;
             cGlobalInfo.WindowHCSAnalyzer.listView3DWorld.Items.Add(NewItem);
-            
+
 
         }
 
@@ -585,7 +587,7 @@ namespace HCSAnalyzer.Classes
             return ToBeReturned;
         }
 
-      //  public static REngine RStat_engine;
+        //  public static REngine RStat_engine;
 
         public void DisplayViewer(cDisplaySingleImage ImageViewer)
         {
@@ -646,15 +648,15 @@ namespace HCSAnalyzer.Classes
                         cGlobalInfo.CurrentScreening.Reference.Add(WellForRef);
 
                     }
-                        //Ref.Add(WellForRef);
+                    //Ref.Add(WellForRef);
                 }
 
                 // Ref.Add(CurrentScreen.GetCurrentDisplayPlate().ListActiveWells[0]);
                 //if (Ref.Count == 0) cGlobalInfo.CurrentScreening.Reference = null;
                 //else
-               // {
-               //     cGlobalInfo.CurrentScreening.Reference = new cReference();
-               // }
+                // {
+                //     cGlobalInfo.CurrentScreening.Reference = new cReference();
+                // }
 
             }
 
@@ -671,7 +673,7 @@ namespace HCSAnalyzer.Classes
         }
 
         public static int[] WinSize = new int[] { 750, 400 };
-        
+
 
 
         /// <summary>
@@ -771,10 +773,10 @@ namespace HCSAnalyzer.Classes
                     CurrentPlateLUT = LUTs.LUT_JET;
                     break;
             }
-            
+
         }
 
-     //   public Color[] ColorForDRCCurves = new Color[] { Color.Blue, Color.Red, Color.Black, Color.Orange, Color.Yellow, Color.LightGreen, Color.Pink, Color.Purple, Color.Cyan };
+        //   public Color[] ColorForDRCCurves = new Color[] { Color.Blue, Color.Red, Color.Black, Color.Orange, Color.Yellow, Color.LightGreen, Color.Pink, Color.Purple, Color.Cyan };
 
         public static string[] ListArtifacts = new string[] { "edge effect", "column artifact", "row artifact", "bowl effect" };
 
@@ -796,7 +798,7 @@ namespace HCSAnalyzer.Classes
         {
             if ((CurrentRichTextBox == null) || (CurrentRichTextBox.IsDisposed)) CurrentRichTextBox = new RichTextBox();
             cGlobalInfo.WindowHCSAnalyzer.richTextBoxConsole.AppendText(DispText + "\n");
-            
+
         }
 
         public static string ConvertIntPosToStringPos(int Pos)
