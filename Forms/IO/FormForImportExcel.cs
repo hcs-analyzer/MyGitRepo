@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using LibPlateAnalysis;
 using HCSAnalyzer.Classes;
+using HCSAnalyzer.Classes.General_Types.Screen;
+using HCSAnalyzer.Classes.General_Types;
 
 namespace HCSAnalyzer
 {
@@ -22,23 +24,24 @@ namespace HCSAnalyzer
 
         public cScreening CurrentScreen = null;
         public HCSAnalyzer thisHCSAnalyzer = null;
+        //public Dictionary<cPropertyType, int> ListPosPropertyOnGUI = new Dictionary<cPropertyType, int>();
+        public Dictionary<string, int> ListPosPropertyOnGUI = new Dictionary<string, int>();
 
         public FormForImportExcel()
         {
             InitializeComponent();
-
-
             ToolTip MytoolTip = new ToolTip();
-
-            //// Set up the delays for the ToolTip.
-            //MytoolTip.AutoPopDelay = 5000;
-            //MytoolTip.InitialDelay = 1000;
-            //MytoolTip.ReshowDelay = 500;
-
-            //MytoolTip.ShowAlways = true;
 
             //// Set up the ToolTip text for the Button and Checkbox.
             MytoolTip.SetToolTip(this.checkBoxConvertNaNTo0, "If a non decimal value is detected, it will be automatically converted into a null value.");
+
+            foreach (cPropertyType item in cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+            {
+                ListPosPropertyOnGUI.Add(item.Name, -1);
+            }
+
+            // TODO: "Well Position has to be added in the cListWellProperty
+            ListPosPropertyOnGUI.Add("Well Position", -1);
         }
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
