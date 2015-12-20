@@ -448,29 +448,25 @@ namespace HCSAnalyzer.Classes
             #region Defaut Well Properties
             ListDefaultPropertyTypes = new List<cPropertyType>();
 
-            cGlobalInfo.ListDefaultPropertyTypes.Add(new cPropertyType("Plate Name", eDataType.STRING));
+            cPropertyType PlateNameProp = new cPropertyType("Plate Name", eDataType.STRING);
+            PlateNameProp.IsLocked = true;
+            cGlobalInfo.ListDefaultPropertyTypes.Add(PlateNameProp);
 
             cPropertyType ConcentrationProp = new cPropertyType("Concentration", eDataType.DOUBLE);
             ConcentrationProp.Min = 0;
-            ConcentrationProp.IsLocked = true;
+            ConcentrationProp.IsLocked = false;
             cGlobalInfo.ListDefaultPropertyTypes.Add(ConcentrationProp);
 
             cGlobalInfo.ListDefaultPropertyTypes.Add(new cPropertyType("Compound Name", eDataType.STRING));
-
             cGlobalInfo.ListDefaultPropertyTypes.Add(new cPropertyType("Cell Line", eDataType.STRING));
-
-            cPropertyType LocusProperty = new cPropertyType("Locus ID", eDataType.INTEGER);
-            LocusProperty.Min = 0;
-            cGlobalInfo.ListDefaultPropertyTypes.Add(LocusProperty);
+            cGlobalInfo.ListDefaultPropertyTypes.Add(new cPropertyType("Locus ID", eDataType.STRING));
 
             //   this.ListWellPropertyType.AddNewType(new cPropertyType("Time Point", eDataType.TIME));
-
-            
 
             cPropertyType WellClassProperty = new cPropertyType("Well Class", eDataType.INTEGER);
             WellClassProperty.Min = -1;
             WellClassProperty.Max = cGlobalInfo.ListWellClasses.Count - 1;// ListCellularPhenotypes.Count;
-            WellClassProperty.IsLocked = true;
+            WellClassProperty.IsLocked = false;
             cGlobalInfo.ListDefaultPropertyTypes.Add(WellClassProperty);
 
             cPropertyType WellClassConfidence = new cPropertyType("Classification Confidence", eDataType.DOUBLE);

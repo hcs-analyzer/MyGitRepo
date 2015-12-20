@@ -131,11 +131,15 @@ namespace LibPlateAnalysis
         {
             SetClass(Class, 1);
         }
-
+        /// <summary>
+        /// Set a well to a new class..
+        /// Be careful, this requires ABSOLUTELY to specify a classification confidence (can be 1 though)
+        /// </summary>
+        /// <param name="Class">New Class</param>
+        /// <param name="ConfidenceValue">Classification conficence associated</param>
         public void SetClass(int Class, double ConfidenceValue)
         {
-            //this.CurrentClass = Class;
-
+            
             this.ListProperties.UpdateValueByName("Well Class", Class);
 
             //this.ClassificationConfidence = ConfidenceValue;
@@ -163,17 +167,17 @@ namespace LibPlateAnalysis
             this.ListClass.Add(new cxWellClass((int)O, (double)Oc));
         }
 
-        public double GetClassificationConfidence()
-        {
-            //if (cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex >= this.ListClass.Count)
-            //    cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex = this.ListClass.Count - 1;
-            //return this.ListClass[cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex];
-            object O = this.ListProperties.FindValueByName("Classification Confidence");
-            if (O == null) return 0;
-            return (double)O;
+        //public double GetClassificationConfidence()
+        //{
+        //    //if (cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex >= this.ListClass.Count)
+        //    //    cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex = this.ListClass.Count - 1;
+        //    //return this.ListClass[cGlobalInfo.CurrentScreening.CurrentHistoryClassStatusIndex];
+        //    object O = this.ListProperties.FindValueByName("Classification Confidence");
+        //    if (O == null) return 0;
+        //    return (double)O;
 
-            //return this.CurrentClass;
-        }
+        //    //return this.CurrentClass;
+        //}
 
         public int GetCurrentClassIdx()
         {

@@ -874,30 +874,21 @@ namespace LibPlateAnalysis
                 //int PosScrollX = cGlobalInfo.panelForPlate.HorizontalScroll.Value;
                 //int PosScrollY = cGlobalInfo.panelForPlate.VerticalScroll.Value;
 
-
-
-
                 cGlobalInfo.panelForPlate.Controls.Clear();
 
                 if (cGlobalInfo.LChart == null) cGlobalInfo.LChart = new List<Chart>();
                 else
                 {
+                    // TODO: Is there a need to dispose the objects here... it seems to have some consequences !! (Manual Hit Selection)
                     foreach (Chart item in cGlobalInfo.LChart)
-                    {
                         item.Dispose();
-                    }
+
                     cGlobalInfo.LChart.Clear();
-
                 }
-                // LChart.Clear();
 
-                
-
-               //  = new List<PlateChart>();
 
                 if (cGlobalInfo.IsDisplayClassOnly)
                 {
-
                     for (int j = 0; j < ParentScreening.Rows; j++)
                         for (int i = 0; i < ParentScreening.Columns; i++)
                         {
@@ -907,8 +898,6 @@ namespace LibPlateAnalysis
                             // Add chart control to the form
                             cGlobalInfo.LChart.Add(TempWell.BuildChartForClass());
                         }
-
-                    // return;
                 }
                 else
                 {
@@ -923,16 +912,12 @@ namespace LibPlateAnalysis
                             {
                                 cWell TempWell = GetWell(i, j, false);
                                 if (TempWell == null) continue;
-
-
-                                //  Panel TmpPanel = TempWell.BuildChartForImage();
-
+                                
                                 cGlobalInfo.panelForPlate.Controls.Add(TempWell.BuildChartForImage());
                             }
                     }
                     else
                     {
-
                         for (int j = 0; j < ParentScreening.Rows; j++)
                             for (int i = 0; i < ParentScreening.Columns; i++)
                             {
@@ -949,7 +934,6 @@ namespace LibPlateAnalysis
                     cGlobalInfo.panelForPlate.Controls.AddRange(cGlobalInfo.LChart.ToArray());
 
                 }
-
                 //cGlobalInfo.panelForPlate.HorizontalScroll.Value = PosScrollX;
                 //cGlobalInfo.panelForPlate.VerticalScroll.Value = PosScrollY;
                 if (MinMax[0] != MinMax[1]) DisplayLUT(IdxDescriptor);

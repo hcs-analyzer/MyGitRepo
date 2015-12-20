@@ -234,7 +234,6 @@ namespace HCSAnalyzer
 
                 UpdateUIAfterLoading();// LoadCSVAssay(CurrOpenFileDialog.FileNames, false);
 
-
                 cGlobalInfo.CurrentScreening.SetDirectory(CurrOpenFileDialog.FileNames[0].Remove(CurrOpenFileDialog.FileNames[0].Length - CurrOpenFileDialog.SafeFileNames[0].Length));
 
                 if (CurrOpenFileDialog.FileNames.Length > 1)
@@ -251,14 +250,8 @@ namespace HCSAnalyzer
                         }
                     }
                 }
-
             }
-
-
-
         }
-
-
 
         private FormForImportExcel LoadCSVAssay(string[] FileNames, bool IsAppend)
         {
@@ -267,14 +260,11 @@ namespace HCSAnalyzer
             FormInfoForFileImporter InfoForFileImporter = new FormInfoForFileImporter(FileNames[0]);
             if (InfoForFileImporter.ShowDialog() != System.Windows.Forms.DialogResult.OK) return null;
 
-
             if (IsAppend == false)
             {
                 if (cGlobalInfo.CurrentScreening != null) cGlobalInfo.CurrentScreening.Close3DView();
                 cGlobalInfo.CurrentScreening = new cScreening("CSV imported Screening");
-
             }
-
 
             FormForImportExcel FromExcel = new FormForImportExcel();
 
@@ -299,13 +289,10 @@ namespace HCSAnalyzer
                 FromExcel.numericUpDownRows.Value = (decimal)cGlobalInfo.CurrentScreening.Rows;
                 FromExcel.numericUpDownRows.ReadOnly = true;
             }
-
             FromExcel.IsImportCSV = true;
-
 
             //int Mode = 2;
             FromExcel.ModeWell = 2;
-
 
             if (InfoForFileImporter.radioButtonWellPosModeA02.Checked)
                 FromExcel.ModeWell = 2;
@@ -348,7 +335,6 @@ namespace HCSAnalyzer
                 LCSVRow.Add(TNames);
             }
 
-            // FromExcel.dataGridViewForImport.RowsDefaultCellStyle.BackColor = Color.Bisque;
             FromExcel.dataGridViewForImport.AlternatingRowsDefaultCellStyle.BackColor = Color.Beige;
 
             DataGridViewColumn ColName = new DataGridViewColumn();
@@ -361,7 +347,6 @@ namespace HCSAnalyzer
             DataGridViewComboBoxColumn columnType = new DataGridViewComboBoxColumn();
             if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
             {
-
                 columnType.DataSource = new string[] { "Plate name", "Column", "Row", "Class", "Name", "Locus ID", "Concentration", "Info", "Descriptor" };
             }
             else
@@ -376,7 +361,6 @@ namespace HCSAnalyzer
                     ListNames[i + 1] = cGlobalInfo.CurrentScreening.ListWellPropertyTypes[i].Name;
 
                 ListNames[cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count + 1] = "Descriptor";
-
             }
             columnType.Name = "Type";
             FromExcel.dataGridViewForImport.Columns.Add(columnType);
@@ -393,10 +377,7 @@ namespace HCSAnalyzer
                 CSVsr.Close();
                 MessageBox.Show("Inconsistent column number. Check your CSV file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
-
             }
-
-
 
             #region automated field detec // int IdxPlateName = 0;
             FromExcel.ListPosPropertyOnGUI["Plate Name"] = 0;
@@ -448,7 +429,7 @@ namespace HCSAnalyzer
                     break;
                 }
 
-         
+
             for (int i = 0; i < Names.Count; i++)
                 if (Names[i].ToLower().Contains("class"))
                 {
@@ -480,7 +461,6 @@ namespace HCSAnalyzer
                 FromExcel.dataGridViewForImport.Rows[i].Cells[2].Value = "Descriptor";
                 FromExcel.dataGridViewForImport.Rows[i].Cells[0].Value = Names[i];
                 FromExcel.dataGridViewForImport.Rows[i].Cells[1].Value = false;
-
             }
 
             #region check the boxes by default if necessary
@@ -519,7 +499,7 @@ namespace HCSAnalyzer
                 FromExcel.dataGridViewForImport.Rows[IdxCompound].Cells[1].Value = true;
             }
 
-            if (FromExcel.ListPosPropertyOnGUI["Well Class"] !=-1)
+            if (FromExcel.ListPosPropertyOnGUI["Well Class"] != -1)
             {
                 FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Class"]].Cells[2].Value = "Well Class";
                 FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Class"]].Cells[1].Value = true;
@@ -549,37 +529,25 @@ namespace HCSAnalyzer
             //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
             //  // }
             //   else
-               //{
-               //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = false;
-               //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
-               //}
+            //{
+            //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = false;
+            //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
+            //}
             #endregion
 
             for (int i = 0; i < Names.Count; i++)
-            {
                 for (int j = 0; j < LCSVRow.Count; j++)
-                {
-                    //  if (i < LCSVRow[j].Count)
                     FromExcel.dataGridViewForImport.Rows[i].Cells[3 + j].Value = LCSVRow[j][i].ToString();
-                    //  else
-                    //      FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow + j].Value = "";
-                }
-            }
 
             FromExcel.dataGridViewForImport.Update();
-            //   FromExcel.dataGridViewForImport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewForImport_MouseClick);
 
             FromExcel.CurrentScreen = cGlobalInfo.CurrentScreening;
             FromExcel.thisHCSAnalyzer = this;
             FromExcel.IsAppend = IsAppend;
             FromExcel.HeaderSize = (int)InfoForFileImporter.numericUpDownHeaderSize.Value;
 
-
             return FromExcel;
-
         }
-
-
 
         private void ProcessOK(FormForImportExcel CSVFeedBackWindow)
         {
@@ -909,19 +877,18 @@ namespace HCSAnalyzer
             int ColSelectedForName = GetColIdxFor("Name", FromExcel);
             int ColLocusID = GetColIdxFor("Locus ID", FromExcel);
             int ColConcentration = FromExcel.ListPosPropertyOnGUI["Concentration"];
-            // int ColInfo = GetColIdxFor("Info", FromExcel);
+            int ColClassifConf = GetColIdxFor("Classification Confidence", FromExcel);
+            int ColCellLine = GetColIdxFor("Cell Line", FromExcel);
+            int ColCompoundName = GetColIdxFor("Compound Name", FromExcel);
+
             int ColClass = FromExcel.ListPosPropertyOnGUI["Well Class"];
 
             int ColWellPos = FromExcel.ListPosPropertyOnGUI["Well Position"];
             int ColPlateName = FromExcel.ListPosPropertyOnGUI["Plate Name"];
             int ColGroup = FromExcel.ListPosPropertyOnGUI["Group"];
 
-
-
             int[] ColsForDescriptors = GetColsIdxFor("Descriptor", FromExcel);
 
-
-            
             int ColCol = GetColIdxFor("Column", FromExcel);
             int ColRow = GetColIdxFor("Row", FromExcel);
             int WellLoaded = 0;
@@ -934,7 +901,6 @@ namespace HCSAnalyzer
                 cGlobalInfo.CurrentScreening.ListDescriptors.Clean();
             }
             int ShiftIdx = cGlobalInfo.CurrentScreening.ListDescriptors.Count;
-
 
             for (int IdxFile = 0; IdxFile < PathNames.Length; IdxFile++)
             {
@@ -966,7 +932,6 @@ namespace HCSAnalyzer
                 }
                 for (int IdxName = 0; IdxName < Names.Count; IdxName++)
                 {
-
                     if (Names[IdxName] != OriginalNames[IdxName])
                     {
                         CSVsr.Close();
@@ -1004,10 +969,7 @@ namespace HCSAnalyzer
                             PlateName = SplittedStrings[SplittedStrings.Length - 2];
                         }
                         else
-                        {
                             PlateName = CurrentFileName;
-                        }
-
                     }
                     else
                         PlateName = CurrentDesc[ColPlateName];
@@ -1083,14 +1045,6 @@ namespace HCSAnalyzer
 
                         if (double.TryParse(CurrentDesc[ColsForDescriptors[idxDesc]], NumberStyles.Any, CultureInfo.InvariantCulture/*.CreateSpecificCulture("en-US")*/, out Value))
                         {
-                            //if(double.IsNaN(Value))
-                            // {
-                            //     else
-                            //{
-                            //    FailToLoad++;
-                            //    goto NEXTLOOP;   
-                            //}
-                            // }
                             CurrentDescriptor = new cSignature(Value, cGlobalInfo.CurrentScreening.ListDescriptors[idxDesc/* + ShiftIdx*/], cGlobalInfo.CurrentScreening);
                             LDesc.Add(CurrentDescriptor);
                         }
@@ -1103,7 +1057,6 @@ namespace HCSAnalyzer
                                 LDesc.Add(CurrentDescriptor);
 
                                 ConvertedNaNValue++;
-
                             }
                             else
                             {
@@ -1123,21 +1076,56 @@ namespace HCSAnalyzer
                             goto NEXTLOOP;
                     }
 
-
                     cWell CurrentWell = new cWell(LDesc, Pos[0], Pos[1], cGlobalInfo.CurrentScreening, CurrentPlate);
-
 
                     CurrentPlate.AddWell(CurrentWell);
                     WellLoaded++;
 
-
                     #region let's take care of the properties
 
-                    if ((ColSelectedForName != -1) && (ColSelectedForName < CurrentDesc.Count))
+                    #region Cell Line
+                    string NameProp = "Cell Line";
+                    int ColTmp = ColCellLine;
+                    if (ColTmp != -1)
                     {
-                        CurrentWell.ListProperties.UpdateValueByName("Compound Name", CurrentDesc[ColSelectedForName]);
+                        switch (CurrentWell.ListProperties.FindByName(NameProp).PropertyType.Type)
+                        {
+                            case eDataType.DOUBLE:
+                                double CurrentValueD;
+                                if (double.TryParse(CurrentDesc[ColTmp], out CurrentValueD))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, (double)CurrentValueD);
+                                break;
+                            case eDataType.BOOL:
+                                break;
+                            case eDataType.STRING:
+                                if ((CurrentDesc[ColTmp].ToString() != "") && (CurrentDesc[ColTmp].ToString().ToLower() != "n.a."))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, CurrentDesc[ColTmp]);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                break;
+                            case eDataType.INTEGER:
+                                int CurrentValue;
+                                if (!int.TryParse(CurrentDesc[ColTmp], out CurrentValue))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, (int)CurrentValue);
+                                break;
+                            case eDataType.TIME:
+                                break;
+                            default:
+                                break;
+                        }
                     }
-
+                    #endregion
+                    if (ColCompoundName != -1)
+                    {
+                        if ((CurrentDesc[ColCompoundName].ToString() != "") && (CurrentDesc[ColCompoundName].ToString().ToLower() != "n.a."))
+                            CurrentWell.ListProperties.UpdateValueByName("Compound Name", CurrentDesc[ColCompoundName]);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Compound Name", null);
+                    }
                     if (ColGroup != -1)
                     {
                         int CurrentValue;
@@ -1149,12 +1137,10 @@ namespace HCSAnalyzer
 
                     if (ColLocusID != -1)
                     {
-                       // string CurrentValue;
-                       if((CurrentDesc[ColLocusID].ToString()!="")&&(CurrentDesc[ColLocusID].ToString().ToLower() != "n.a."))
+                        if ((CurrentDesc[ColLocusID].ToString() != "") && (CurrentDesc[ColLocusID].ToString().ToLower() != "n.a."))
                             CurrentWell.ListProperties.UpdateValueByName("Locus ID", CurrentDesc[ColLocusID].ToString());
-                       else
+                        else
                             CurrentWell.ListProperties.UpdateValueByName("Locus ID", null);
-                        //    CurrentWell.ListProperties.UpdateValueByName("Locus ID", (int)CurrentValue);
                     }
 
                     if (ColConcentration != -1)
@@ -1166,17 +1152,26 @@ namespace HCSAnalyzer
                         else
                             CurrentWell.ListProperties.UpdateValueByName("Concentration", CurrentValue);
                     }
-                #endregion
-                NEXTSTEP:;
 
                     if (ColClass != -1)
                     {
                         int CurrentValue;
                         if (!int.TryParse(CurrentDesc[ColClass], out CurrentValue))
-                            goto NEXTLOOP;
-                        CurrentWell.SetClass(CurrentValue);
+                            CurrentWell.ListProperties.UpdateValueByName("Well Class", 0);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Well Class", CurrentValue);
                     }
+                
 
+                    if (ColClassifConf != -1)
+                    {
+                        double CurrentValue;
+                        if (!double.TryParse(CurrentDesc[ColClassifConf], out CurrentValue))
+                            CurrentWell.ListProperties.UpdateValueByName("Classification Confidence", null);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Classification Confidence", CurrentValue);
+                    }
+                #endregion
                 NEXTLOOP:;
 
                 }
@@ -1681,8 +1676,6 @@ namespace HCSAnalyzer
             if (DisplayDescriptorsToSave(CurrentPathforCSV) == false) return;
 
             MessageBox.Show("CSV file saved !");
-
-
         }
 
         private bool DisplayDescriptorsToSave(string CurrentPathforCSV)
@@ -1708,8 +1701,6 @@ namespace HCSAnalyzer
             style.Font = new Font(FormToSave.dataGridView.Font, FontStyle.Bold);
 
             FormToSave.dataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.Beige;
-
-
 
             int RowIdx = 0;
             FormToSave.dataGridView.Rows.Add();
@@ -1814,18 +1805,22 @@ namespace HCSAnalyzer
         {
             using (StreamWriter myFile = new StreamWriter(PathName, false, Encoding.Default))
             {
+                #region write down the header first
                 string sHeaders = "";
+                List<string> LStrings = new List<string>();
                 for (int Row = 0; Row < GridView.RowCount; Row++)
                 {
                     if ((bool)GridView.Rows[Row].Cells[1].Value == true)
                     {
                         sHeaders += (string)GridView.Rows[Row].Cells[0].Value + ",";
-
+                        LStrings.Add((string)GridView.Rows[Row].Cells[0].Value);
                     }
                 }
                 sHeaders = sHeaders.Remove(sHeaders.Length - 1, 1);
                 myFile.WriteLine(sHeaders);
+                #endregion
 
+                string sToBeWritten = "";
                 int NumDescriptor = cGlobalInfo.CurrentScreening.ListDescriptors.Count;
                 int RowPos = 0;
 
@@ -1836,52 +1831,52 @@ namespace HCSAnalyzer
                     for (int IdxValue = 0; IdxValue < cGlobalInfo.CurrentScreening.Columns; IdxValue++)
                         for (int IdxValue0 = 0; IdxValue0 < cGlobalInfo.CurrentScreening.Rows; IdxValue0++)
                         {
-                            sHeaders = "";
+                            sToBeWritten = "";
                             cWell TmpWell = CurrentPlateToProcess.GetWell(IdxValue, IdxValue0, true);
                             if (TmpWell == null) continue;
 
-
-                            int ColPos = 0;
                             int RealPos = 0;
 
-                            if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                                sHeaders += CurrentPlateToProcess.GetName() + ",";
-
-                            // //if (cGlobalInfo.OptionsWindow.radioButtonWellPosModeSingle.Checked)
-                            // //{
-                            if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                                //   GridToSave.Rows[RowPos].Cells[ColPos++].Value = ConvertPosition(TmpWell.GetPosX(), TmpWell.GetPosY());
-                                sHeaders += ConvertPosition(TmpWell.GetPosX(), TmpWell.GetPosY()) + ",";
-
-                            ////}
-                            ////else
-                            ////{
-                            ////    if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                            ////    {
-                            ////        GridToSave.Rows[RowPos].Cells[ColPos++].Value = TmpWell.GetPosX();
-                            ////    }
-                            ////    if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                            ////    {
-                            ////        GridToSave.Rows[RowPos].Cells[ColPos++].Value = TmpWell.GetPosY();
-                            ////    }
-                            ////}
-                            foreach (var item in cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+                            // first, extract the properties
+                            for (int i = 0; i < LStrings.Count; i++)
                             {
-                                if (item.Name == "Plate Name") continue;
-
-                                if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
+                                string TmpName = LStrings[i];
+                                RealPos = 0;
+                                // }
+                                // foreach (string item in sHeaders)// cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+                                // {
+                                if (TmpName == "Well Position")
                                 {
-                                    object TmpObj = TmpWell.ListProperties.FindValueByName(item.Name);
-
-                                    if (TmpObj != null)
-                                        sHeaders += TmpObj.ToString() + ",";
+                                    sToBeWritten += TmpWell.GetPos() + ",";
+                                    RealPos++;
+                                }
+                                else if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
+                                {
+                                   // RealPos++;
+                                    cProperty TmpP = TmpWell.ListProperties.FindPropertyByName(TmpName);
+                                    if (TmpP != null)
+                                    {
+                                        /// object TmpObj = TmpWell.ListProperties.FindValueByName(TmpName);
+                                        object TmpObj = TmpP.GetValue();
+                                        if (TmpObj != null)
+                                            sToBeWritten += TmpObj.ToString() + ",";
+                                        else
+                                            sToBeWritten += "n.a.,";
+                                    }
                                     else
-                                        sHeaders += "n.a.,";
+                                    {
+                                        // it's a descriptor then ....
+                                        cDescriptorType DT = cGlobalInfo.CurrentScreening.ListDescriptors.GetDescriptorByName(TmpName);
+                                        if (DT == null) // shouldn't happen
+                                            sToBeWritten += "n.a.,";
+                                        else
+                                            sToBeWritten += TmpWell.GetAverageValue(DT).ToString() + ",";
+                                    }
 
                                 }
                             }
-                            sHeaders = sHeaders.Remove(sHeaders.Length - 1, 1);
-                            myFile.WriteLine(sHeaders);
+                            sToBeWritten = sToBeWritten.Remove(sToBeWritten.Length - 1, 1);
+                            myFile.WriteLine(sToBeWritten);
 
                             RowPos++;
                         }
