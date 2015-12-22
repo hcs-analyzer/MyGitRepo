@@ -472,11 +472,11 @@ namespace HCSAnalyzer.Classes
             cPropertyType WellClassConfidence = new cPropertyType("Classification Confidence", eDataType.DOUBLE);
             WellClassConfidence.Min = 0;
             WellClassConfidence.Max = 1;
-            WellClassConfidence.IsLocked = true;
+         //   WellClassConfidence.IsLocked = true;
             cGlobalInfo.ListDefaultPropertyTypes.Add(WellClassConfidence);
 
             cPropertyType GroupProp = new cPropertyType("Group", eDataType.INTEGER);
-            GroupProp.IsLocked = true;
+           // GroupProp.IsLocked = true;
             GroupProp.Min = 0;
             cGlobalInfo.ListDefaultPropertyTypes.Add(GroupProp);
             #endregion
