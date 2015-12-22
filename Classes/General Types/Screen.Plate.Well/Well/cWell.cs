@@ -139,7 +139,6 @@ namespace LibPlateAnalysis
         /// <param name="ConfidenceValue">Classification conficence associated</param>
         public void SetClass(int Class, double ConfidenceValue)
         {
-            
             this.ListProperties.UpdateValueByName("Well Class", Class);
 
             //this.ClassificationConfidence = ConfidenceValue;
@@ -2018,10 +2017,20 @@ namespace LibPlateAnalysis
             IV.Run();
         }
 
+
         public void DisplayInfoWindow(int IdxDescriptor)
         {
             FormForWellInformation NewWindow = new FormForWellInformation(this);
             NewWindow.Text = this.GetShortInfo();
+
+            int Ypos = 30;
+            foreach (cProperty item in this.ListProperties)
+            {
+                Control C = item.GetAssociatedGUI();
+                C.Location = new Point(6, Ypos);
+                NewWindow.panelForProperties.Controls.Add(C);
+                Ypos += C.Height * 2;
+            }
 
             cExtendedTable EL = this.GetAverageValuesList(true);
             
@@ -2034,22 +2043,14 @@ namespace LibPlateAnalysis
             
             NewWindow.panelForDescValues.Controls.Add(VT.GetOutPut());
 
-            NewWindow.textBoxName.Text = GetCpdName();
-            NewWindow.textBoxInfo.Text = Info;
-
-            object ConcentrationValue = this.ListProperties.FindValueByName("Concentration");
-            if (ConcentrationValue != null) NewWindow.textBoxConcentration.Text = ((double)ConcentrationValue).ToString("e4");
-            else
-                NewWindow.textBoxConcentration.Text = "n.a.";
-
-            object ValObj = this.ListProperties.FindValueByName("Locus ID");
-            if (ValObj != null)
-            {
-                int LocusID = (int)ValObj;
-                NewWindow.textBoxLocusID.Text = ((int)(LocusID)).ToString();
-            }
-            else
-                NewWindow.textBoxLocusID.Text = "n.a.";
+            //object ValObj = this.ListProperties.FindValueByName("Locus ID");
+            //if (ValObj != null)
+            //{
+            //    int LocusID = (int)ValObj;
+            //    NewWindow.textBoxLocusID.Text = ((int)(LocusID)).ToString();
+            //}
+            //else
+            //    NewWindow.textBoxLocusID.Text = "n.a.";
 
             if (cGlobalInfo.ViewMode != eViewMode.PIE)
             {
@@ -2138,26 +2139,26 @@ namespace LibPlateAnalysis
                 NewWindow.chartForFormWell.Series.Add(CurrentSeries);
             }
 
-            #region Text Info
-            NewWindow.richTextBoxDescription.AcceptsTab = true;
-            NewWindow.richTextBoxDescription.AppendText("Plate: " + this.AssociatedPlate.GetName() + "\nWell: [" + this.GetPosX() + "x" + this.GetPosY() + "] - " + this.GetNumBiologicalObjects() + " Object(s).");
+            //#region Text Info
+            //NewWindow.richTextBoxDescription.AcceptsTab = true;
+            //NewWindow.richTextBoxDescription.AppendText("Plate: " + this.AssociatedPlate.GetName() + "\nWell: [" + this.GetPosX() + "x" + this.GetPosY() + "] - " + this.GetNumBiologicalObjects() + " Object(s).");
 
-            NewWindow.richTextBoxDescription.AppendText("\n\nProperty List:\n");
-            foreach (var item in this.ListProperties)
-            {
-                if (item.GetValue() != null)
-                {
-                    NewWindow.richTextBoxDescription.AppendText("\nName:\t" + item.PropertyType.Name + "\n\tType: " + item.PropertyType.Type.ToString() + "\n\tValue: " + item.GetValue().ToString() + "\n\tLocked: " + item.PropertyType.IsLocked.ToString() + "\n");
-                    if ((item.PropertyType.Type == eDataType.DOUBLE) || (item.PropertyType.Type == eDataType.INTEGER))
-                    {
-                        NewWindow.richTextBoxDescription.AppendText("\tMin:\t" + item.PropertyType.Min + "\n\tMax: " + item.PropertyType.Max + "\n");
-                    }
+            //NewWindow.richTextBoxDescription.AppendText("\n\nProperty List:\n");
+            //foreach (var item in this.ListProperties)
+            //{
+            //    if (item.GetValue() != null)
+            //    {
+            //        NewWindow.richTextBoxDescription.AppendText("\nName:\t" + item.PropertyType.Name + "\n\tType: " + item.PropertyType.Type.ToString() + "\n\tValue: " + item.GetValue().ToString() + "\n\tLocked: " + item.PropertyType.IsLocked.ToString() + "\n");
+            //        if ((item.PropertyType.Type == eDataType.DOUBLE) || (item.PropertyType.Type == eDataType.INTEGER))
+            //        {
+            //            NewWindow.richTextBoxDescription.AppendText("\tMin:\t" + item.PropertyType.Min + "\n\tMax: " + item.PropertyType.Max + "\n");
+            //        }
 
-                }
-                else
-                    NewWindow.richTextBoxDescription.AppendText("\nName:\t" + item.PropertyType.Name + "\n\tType: " + item.PropertyType.Type.ToString() + "\n\tValue: NULL\n\tLocked: " + item.PropertyType.IsLocked.ToString() + "\n");
-            }
-            #endregion
+            //    }
+            //    else
+            //        NewWindow.richTextBoxDescription.AppendText("\nName:\t" + item.PropertyType.Name + "\n\tType: " + item.PropertyType.Type.ToString() + "\n\tValue: NULL\n\tLocked: " + item.PropertyType.IsLocked.ToString() + "\n");
+            //}
+            //#endregion
 
             NewWindow.chartForFormWell.Update();
             NewWindow.Show();

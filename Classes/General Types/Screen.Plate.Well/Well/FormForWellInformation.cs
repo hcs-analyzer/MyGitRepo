@@ -97,11 +97,41 @@ namespace HCSAnalyzer.Forms
 
         private void buttonUpdateAndClose_Click(object sender, EventArgs e)
         {
-            CurrentWell.Info = this.textBoxInfo.Text;
-            CurrentWell.ListProperties.UpdateValueByName("Compound Name", this.textBoxName.Text);
-            double Concen = 0;
-            if (double.TryParse(this.textBoxConcentration.Text, out Concen))
-                CurrentWell.ListProperties.UpdateValueByName("Concentration", Concen);
+            //CurrentWell.Info = this.textBoxInfo.Text;
+            //CurrentWell.ListProperties.UpdateValueByName("Compound Name", this.textBoxName.Text);
+            //double Concen = 0;
+            //if (double.TryParse(this.textBoxConcentration.Text, out Concen))
+            //    CurrentWell.ListProperties.UpdateValueByName("Concentration", Concen);
+
+            foreach (Control item in this.panelForProperties.Controls)
+            {
+                cProperty P = (cProperty)(item.Tag);
+                
+                if (P.PropertyType.Type == eDataType.STRING)
+                {
+                    P.SetNewValue(item.Controls[1].Text);
+                }
+                else if(P.PropertyType.Type == eDataType.DOUBLE)
+                {
+                    double Res;
+                    if(double.TryParse(item.Controls[1].Text,out Res))
+                        P.SetNewValue(Res);
+                }
+                else if (P.PropertyType.Type == eDataType.INTEGER)
+                {
+                    int Res;
+                    if (int.TryParse(item.Controls[1].Text, out Res))
+                        P.SetNewValue(Res);
+                }
+                else if (P.PropertyType.Type == eDataType.BOOL)
+                {
+                    bool Res;
+                    if (bool.TryParse(item.Controls[1].Text, out Res))
+                        P.SetNewValue(Res);
+                }
+
+            }
+
 
             CurrentWell.AssociatedPlate.ParentScreening.GetCurrentDisplayPlate().DisplayDistribution(CurrentWell.AssociatedPlate.ParentScreening.ListDescriptors.GetActiveDescriptor(), false);
         }

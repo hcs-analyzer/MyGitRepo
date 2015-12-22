@@ -64,6 +64,8 @@ namespace HCSAnalyzer.Classes.General_Types
 
         public void SetNewValue(object NewValue)
         {
+            if (this.PropertyType.IsLocked) return;
+
             if (NewValue == null)
             {
                 this.Value = null;
@@ -95,10 +97,12 @@ namespace HCSAnalyzer.Classes.General_Types
         public Control GetAssociatedGUI()
         {
             Panel ToBeReturned = new Panel();
-
+            ToBeReturned.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             ToBeReturned.Tag = this;
             Label TextName = new Label();
             TextName.Text = this.PropertyType.Name;
+            TextName.Anchor =  AnchorStyles.Left | AnchorStyles.Top;
+            TextName.Width += 50;
 
             ToolTip ToolTipForInfo = new ToolTip();
             ToolTipForInfo.SetToolTip(TextName, PropertyType.GetInfo());
@@ -123,9 +127,11 @@ namespace HCSAnalyzer.Classes.General_Types
                 
                 CtrlForDouble.Value = (decimal)DefaultValue;
 
-                CtrlForDouble.Location = new System.Drawing.Point(TextName.Width + 10, TextName.Location.Y);
+                CtrlForDouble.Location = new System.Drawing.Point(TextName.Width + 2, TextName.Location.Y);
+                CtrlForDouble.Width -= 20;
                 ToBeReturned.Width = CtrlForDouble.Location.X + CtrlForDouble.Width + 40;
                 ToBeReturned.Height = CtrlForDouble.Height;
+               
                 ToBeReturned.Controls.Add(CtrlForDouble);
             }
             else if (this.PropertyType.Type == eDataType.INTEGER)
@@ -142,13 +148,14 @@ namespace HCSAnalyzer.Classes.General_Types
                 CtrlForInt.Minimum = (decimal)this.PropertyType.Min;
                 CtrlForInt.Maximum = (decimal)this.PropertyType.Max;
                 CtrlForInt.Value = (decimal)DefaultValue;
+                CtrlForInt.Width -= 20;
                 
                 if((PropertyType.IntType == eIntegerType.EVEN)||(PropertyType.IntType == eIntegerType.ODD))
                 {
                     CtrlForInt.Increment=2;
                 }
 
-                CtrlForInt.Location = new System.Drawing.Point(TextName.Width + 10, TextName.Location.Y);
+                CtrlForInt.Location = new System.Drawing.Point(TextName.Width + 2, TextName.Location.Y);
                 ToBeReturned.Width = CtrlForInt.Location.X + CtrlForInt.Width + 40;
                 ToBeReturned.Height = CtrlForInt.Height;
                 ToBeReturned.Controls.Add(CtrlForInt);
@@ -207,8 +214,8 @@ namespace HCSAnalyzer.Classes.General_Types
                     ToBeReturned.Controls.Add(CtrlForString);
                 }
             }
-
-            return ToBeReturned;
+            if (this.PropertyType.IsLocked) ToBeReturned.Enabled = false;
+                return ToBeReturned;
         }
 
         void CtrlForInt_ValueChanged(object sender, EventArgs e)
