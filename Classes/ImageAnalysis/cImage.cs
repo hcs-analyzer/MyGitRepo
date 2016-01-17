@@ -18,7 +18,6 @@ using Kitware.VTK;
 using HCSAnalyzer.Classes.ImageAnalysis._3D_Engine;
 using HCSAnalyzer.Classes._3D;
 using System.IO;
-using FreeImageAPI;
 using System.Net;
 using HCSAnalyzer.Classes.ImageAnalysis.FormsForImages;
 using HCSAnalyzer.Classes.General_Types;
@@ -724,20 +723,254 @@ namespace ImageAnalysis
                         MyCellomicsReader.close();
                         break;
                     #endregion
-                    #region tiff - BioFormats
-                    case "tiff":
+                    #region tiff - tif - LibTiff
+                    case "tiff" :
+                    case "tif":
+                        BitMiracle.LibTiff.Classic.Tiff image = BitMiracle.LibTiff.Classic.Tiff.Open(CurrentName, "r");
 
-                        loci.formats.@in.TiffReader MyTiffReader = new loci.formats.@in.TiffReader();
-                        MyTiffReader.setId(CurrentName);
-                        rgbValues = MyTiffReader.openBytes(0);
-                        this.Width = MyTiffReader.getSizeX();
-                        this.Height = MyTiffReader.getSizeY();
-                        this.Depth = MyTiffReader.getSizeZ();
-                        NumChannels = MyTiffReader.getSizeC();
-                        NumBitsPerPixel = MyTiffReader.getBitsPerPixel();
-                        MyTiffReader.close();
+                        if (image == null) return;
+                        
+                        this.Depth = image.NumberOfDirectories();
+
+                        BitMiracle.LibTiff.Classic.FieldValue[] value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGELENGTH);
+                        this.Height = value[0].ToInt();
+
+                        value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEWIDTH);
+                        this.Width = value[0].ToInt();
+
+                        this.Resolution.X = 1;
+                        value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.XRESOLUTION);
+                        if (value!=null) this.Resolution.X = value[0].ToFloat();
+                        this.Resolution.Y = 1;
+                        value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.YRESOLUTION);
+                        if (value != null) this.Resolution.Y = value[0].ToFloat();
+
+                        this.Resolution.Z = 1;
+
+                        value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PHOTOMETRIC);
+                        NumChannels = 1;
+
+                        #region RGB
+                        if (value[0].ToString() == "RGB")
+                        {
+                            NumChannels = 3;
+                            for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
+                            {
+                                cSingleChannelImage TmpChannel = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
+                                this.SingleChannelImage.Add(TmpChannel);
+                            }
+
+                            int[] raster = new int[this.Height * this.Width];
+
+                            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.ORIENTATION);
+
+                            if (image.ReadRGBAImage(this.Width, this.Height, raster))
+                            {
+                                if (value[0].ToString() == "TOPLEFT")
+                                {
+                                    for (int j = 0; j < this.Height; j++)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                        {
+                                            this.SingleChannelImage[0].Data[i + (this.Height - j - 1) * this.Width] = (raster[i + j * this.Width] & 0x000000FF) >> 00;
+                                            this.SingleChannelImage[1].Data[i + (this.Height - j - 1) * this.Width] = (raster[i + j * this.Width] & 0x0000FF00) >> 8;
+                                            this.SingleChannelImage[2].Data[i + (this.Height - j - 1) * this.Width] = (raster[i + j * this.Width] & 0x00FF0000) >> 16;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 0; j < this.Height; j++)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                        {
+                                            this.SingleChannelImage[0].Data[i + j * this.Width] = (raster[i + j * this.Width] & 0x000000FF) >> 00;
+                                            this.SingleChannelImage[1].Data[i + j * this.Width] = (raster[i + j * this.Width] & 0x0000FF00) >> 8;
+                                            this.SingleChannelImage[2].Data[i + j * this.Width] = (raster[i + j * this.Width] & 0x00FF0000) >> 16;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
+                        #region Palette
+                        else if (value[0].ToString() == "PALETTE")
+                        {
+                            return;
+
+                            this.Depth = 10;
+                         
+                               
+                          
+                            for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
+                            {
+                                cSingleChannelImage TmpChannel = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
+                                this.SingleChannelImage.Add(TmpChannel);
+                            }
+
+                            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.BITSPERSAMPLE);
+                            int BitPerSample = value[0].ToInt();
+                            int BytePerSample = BitPerSample >> 3;
+                            int ScanLineSize = image.ScanlineSize();
+
+                            int TagCount = image.GetTagListCount();
+                            byte[] buf = new byte[ScanLineSize];
+                            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.ORIENTATION);
+                            for (int z = 0; z < 10; z++)
+                            {
+
+                                image.ReadDirectory();
+                                for (int row = 0; row < this.Height; row++)
+                                {
+                                    image.ReadScanline(buf, row);
+                                    if (BitPerSample == 8)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[z* this.Width* this.Height + i + row * this.Width] = buf[i];
+                                    }
+                                    else if (BitPerSample == 16)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[i + row * this.Width] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                                    }
+                                }
+                            }
+
+                            image.Close(); // or image.Dispose();
+                            cGlobalInfo.BufferedImage = this;
+                            return;
+
+                            // TODO: TIFF Palette mode not impletemented yet
 
 
+                            //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEDEPTH);
+                            //  int ImageDepth = 1;
+                            //  if (value!=null) 
+                            //      ImageDepth = value[0].ToInt();
+
+                            //  Im = new cImage(this.Width, this.Height, 1, 1);// image.StripSize(), 1);
+                            //                                                 //   value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PLANARCONFIG);
+                            //                                                 //   BitMiracle.LibTiff.Classic.PlanarConfig config = (BitMiracle.LibTiff.Classic.PlanarConfig)value[0].ToInt();
+
+                            //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.BITSPERSAMPLE);
+
+                            //  //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PAGENUMBER);
+                            ////  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.SAMPLESPERPIXEL);
+
+                            ////  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.COLORMAP);
+                            //  int BitPerSample = value[0].ToInt();
+                            //  int BytePerSample = BitPerSample >> 3;
+                            //  int ScanLineSize = image.ScanlineSize();
+
+                            //  int TagCount = image.GetTagListCount();
+                            //  byte[] buf = new byte[ScanLineSize];
+
+                            //  for (int row = 0; row < this.Height; row++)
+                            //  {
+                            //      image.ReadScanline(buf, row);
+                            //      if (BitPerSample == 8)
+                            //      {
+                            //          for (int i = 0; i < this.Width; i++)
+                            //              Im.SingleChannelImage[0].Data[i + row * this.Width] = buf[i];
+                            //      }
+                            //      else if (BitPerSample == 16)
+                            //      {
+                            //          for (int i = 0; i < this.Width; i++)
+                            //              Im.SingleChannelImage[0].Data[i + row * this.Width] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                            //      }
+                            //  }
+
+
+
+
+                        }
+                        #endregion
+                        #region regular
+                        else
+                        {
+
+                            for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
+                            {
+                                cSingleChannelImage TmpChannel = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
+                                this.SingleChannelImage.Add(TmpChannel);
+                            }
+
+
+                            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.BITSPERSAMPLE);
+                            int BitPerSample = value[0].ToInt();
+                            int BytePerSample = BitPerSample >> 3;
+                            int ScanLineSize = image.ScanlineSize();
+
+                            int TagCount = image.GetTagListCount();
+
+                            //value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag);
+
+                            // value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEDEPTH);
+                            // byte[] buf = new byte[image.StripSize()];
+                            // for (int strip = 0; strip < image.NumberOfStrips(); strip++)
+                            //     image.ReadEncodedStrip(strip, buf, 0, -1);
+
+                            byte[] buf = new byte[ScanLineSize];
+
+                            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.ORIENTATION);
+
+                            if ((value != null) && (value[0].ToString() == "TOPLEFT"))
+                            {
+                                for (int row = 0; row < this.Height; row++)
+                                {
+                                    image.ReadScanline(buf, row);
+                                    if (BitPerSample == 8)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[i + (this.Height - row - 1) * this.Width] = buf[i];
+                                    }
+                                    else if (BitPerSample == 16)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[i + (this.Height - row - 1) * this.Width] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                for (int row = 0; row < this.Height; row++)
+                                {
+                                    image.ReadScanline(buf, row);
+                                    if (BitPerSample == 8)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[i + row * this.Width] = buf[i];
+                                    }
+                                    else if (BitPerSample == 16)
+                                    {
+                                        for (int i = 0; i < this.Width; i++)
+                                            this.SingleChannelImage[0].Data[i + row * this.Width] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                                    }
+                                }
+                            }
+
+                        }
+                        #endregion
+
+                        image.Close(); // or image.Dispose();
+                        cGlobalInfo.BufferedImage = this;
+                        return;
+
+    
+                    #endregion                    #region JPG - FreeImage
+                    #region jpeg - libTiff
+                    case "jpg":
+                    case "jpeg":
+                        loci.formats.@in.JPEGReader MyJpeg1Reader = new loci.formats.@in.JPEGReader();
+                        MyJpeg1Reader.setId(CurrentName);
+                        rgbValues = MyJpeg1Reader.openBytes(0);
+                        this.Width = MyJpeg1Reader.getSizeX();
+                        this.Height = MyJpeg1Reader.getSizeY();
+                        this.Depth = MyJpeg1Reader.getSizeZ();
+                        NumChannels = MyJpeg1Reader.getSizeC();
+                        NumBitsPerPixel = MyJpeg1Reader.getBitsPerPixel();
+                        MyJpeg1Reader.close();
                         break;
                     #endregion
                     #region LSM - BioFormats
@@ -811,292 +1044,7 @@ namespace ImageAnalysis
                         }
                         goto NEXTLOOP;
                     #endregion
-                    #region tif - FreeImage
-                    case "tif":
-                        if (!FreeImage.IsAvailable())
-                        {
-                            Console.WriteLine("FreeImage.dll seems to be missing. Aborting.");
-                            return;
-                        }
 
-                        FIMULTIBITMAP dib1 = new FIMULTIBITMAP();
-
-                        dib1 = FreeImage.OpenMultiBitmapEx(CurrentName,true);
-                        //FIBITMAP dib2 = FreeImage.Load(FREE_IMAGE_FORMAT.FIF_TIFF, CurrentName, FREE_IMAGE_LOAD_FLAGS.DEFAULT);
-                        //  BITMAPINFOHEADER BIH = FreeImage.GetInfoHeaderEx(dib);
-                        // uint TagCount = FreeImage.GetMetadataCount(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib1);
-                        int PageCount = (int)FreeImage.GetPageCount(dib1);
-                        this.Depth = PageCount;
-                        NumChannels = 1;
-                        
-
-                        for (int IDxPlane = 0; IDxPlane < PageCount; IDxPlane++)
-                        {
-                            FIBITMAP dib = FreeImage.LockPage(dib1, IDxPlane);
-                            //dib = dib2;
-                            // dib = FreeImage.MakeThumbnail(FreeImage.LockPage(dib1, IDxPlane), 400, true);
-
-                            FREE_IMAGE_COLOR_TYPE s = FreeImage.GetColorType(dib);
-                            if (IDxPlane == 0)
-                            {
-                                this.Width = (int)FreeImage.GetWidth(dib);
-                                this.Height = (int)FreeImage.GetHeight(dib);
-                                this.Resolution.X = FreeImage.GetResolutionX(dib);
-                                this.Resolution.Y = FreeImage.GetResolutionY(dib);
-
-                                NumBitsPerPixel = (int)FreeImage.GetBPP(dib);
-                             //   BITMAPINFO aaaaa=  FreeImage.GetInfoEx(dib);
-                                BITMAPINFO BI = FreeImage.GetInfoEx(dib);
-
-                                uint aaaa= FreeImage.GetColorsUsed(dib);
-
-                                FITAG tag;
-                                uint TagCount = FreeImage.GetMetadataCount(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib);
-                                FIMETADATA fMeta = FreeImage.FindFirstMetadata(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, dib, out tag);
-                                string myTagDesc = FreeImage.GetTagDescription(tag);
-                                string myTag = FreeImage.TagToString(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, tag, 0);
-                                Console.WriteLine(myTagDesc + " :" + myTag);
-
-                                while (FreeImage.FindNextMetadata(fMeta, out tag))
-                                {
-                                    myTag = FreeImage.TagToString(FREE_IMAGE_MDMODEL.FIMD_EXIF_MAIN, tag, 0);
-                                    myTagDesc = FreeImage.GetTagDescription(tag);
-                                    Console.WriteLine(myTagDesc + " :" + myTag);
-
-                                }
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                {
-                                    cSingleChannelImage TmpChannelImage = new cSingleChannelImage(this.Width, this.Height, this.Depth, new cPoint3D(1, 1, 1));
-
-                                    // if (ListImageMetaInfo[IdxChannel].Name != "") TmpChannelImage.Name = ListImageMetaInfo[IdxChannel].Name;
-                                    if (ListImageMetaInfo[IdxName].Name != "") TmpChannelImage.Name = ListImageMetaInfo[IdxName].Name;
-
-                                    if (ListImageMetaInfo[IdxChannel].ResolutionX != -1) this.Resolution.X = ListImageMetaInfo[IdxChannel].ResolutionX;
-                                    if (ListImageMetaInfo[IdxChannel].ResolutionY != -1) this.Resolution.Y = ListImageMetaInfo[IdxChannel].ResolutionY;
-                                    if (ListImageMetaInfo[IdxChannel].ResolutionZ != -1) this.Resolution.Z = ListImageMetaInfo[IdxChannel].ResolutionZ;
-
-                                    if (ListImageMetaInfo[IdxChannel].PositionX != -1) this.Position.X = ListImageMetaInfo[IdxChannel].PositionX;
-                                    if (ListImageMetaInfo[IdxChannel].PositionY != -1) this.Position.Y = ListImageMetaInfo[IdxChannel].PositionY;
-                                    if (ListImageMetaInfo[IdxChannel].PositionZ != -1) this.Position.Z = ListImageMetaInfo[IdxChannel].PositionZ;
-
-                                    this.SingleChannelImage.Add(TmpChannelImage);
-                                }
-                            }
-
-                            rgbValues = new byte[this.Width * this.Height * NumChannels];
-
-                            if (NumBitsPerPixel == 16)
-                            {
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                    for (int i = 0; i < this.Height; i++)
-                                    {
-                                        // Get scanline from the bottom part of the bitmap
-                                        Scanline<FI16RGB565> scanline = new Scanline<FI16RGB565>(dib, i);
-
-                                        FI16RGB565[] rgbtBottom = scanline.Data;
-                                        for (int IdxPix = 0; IdxPix < rgbtBottom.Length; IdxPix++)
-                                        {
-                                            this.SingleChannelImage[IdxChannel + ChannelStart].Data[IdxPix + (this.Height - i - 1) * this.Width] = ((rgbtBottom[IdxPix].Red * 31) / 255 << 11) + ((rgbtBottom[IdxPix].Green * 63) / 255 << 5) + (rgbtBottom[IdxPix].Blue * 31) / 255;
-
-                                            //(rgbtBottom[IdxPix].Red << 10) + (rgbtBottom[IdxPix].Green << 5) + rgbtBottom[IdxPix].Blue;
-
-                                        }
-                                    }
-                            }
-                            else
-                            {
-                                IntPtr ip = FreeImage.GetBits(dib);
-
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                    for (int i = 0; i < this.Height; i++)
-                                    {
-                                        for (int IdxPix = 0; IdxPix < this.Width; IdxPix++)
-                                        {
-                                            this.SingleChannelImage[IdxChannel + ChannelStart].Data[IdxPix + (this.Height - i - 1) * this.Width + this.Width * this.Height * IDxPlane] =
-                                                System.Runtime.InteropServices.Marshal.ReadByte(ip, IdxPix + this.Width * i);
-
-                                        }
-                                    }
-                            }
-
-                            if (!dib.IsNull)
-                                FreeImage.Unload(dib);
-
-                            // Make sure to set the handle to null so that it is clear that the handle is not pointing to a bitmap.
-                            dib.SetNull();
-
-                        }
-
-                        this.Name = CurrentName;
-                        //this.SliceSize = this.Width * this.Height;
-                        //this.ImageSize = SliceSize * Depth;
-
-                        goto NEXTLOOP;
-
-                        //FreeImage.FlipVertical(LoadedImage);
-                        ////Image CurrentMSImage = (Image)FreeImage.GetBitmap(LoadedImage);
-                        //FreeImageAPI.FIBITMAP Converted24Im = FreeImage.ConvertToGreyscale(LoadedImage);
-                        //IntPtr Pt =  FreeImage.GetBits(LoadedImage);
-
-                        //int bytes = Width*Height*3;
-                        //byte[] rgbValues = new byte[bytes];
-
-                        //// Copy the RGB values into the array.
-                        //System.Runtime.InteropServices.Marshal.Copy(Pt, rgbValues, 0,bytes);
-                        //FormForImageDisplay NewDispl = new FormForImageDisplay();
-                        //NewDispl.pictureBoxForImage.Image = (Image)FreeImage.GetBitmap(LoadedImage);
-                        //NewDispl.Show();
-
-
-                        //  this.Data = new float[this.NumChannels][];
-                        //if (IdxName == 0)
-                        //    this.SingleChannelImage = new cListSingleChannelImage();
-
-
-
-                        //int GlobalIdx = 0;
-                        //cSingleChannelImage CI = new cSingleChannelImage(this.Width * this.Height * this.Depth);
-                        //CI.Data[0] = 10;
-
-                        //            float Value;
-                        //    int PixIdx = 0;
-                        //    for (int IdxZ = 0; IdxZ < this.Depth; IdxZ++)
-                        //        for (int IdxY = 0; IdxY < this.Height; IdxY++)
-                        //            for (int IdxX = 0; IdxX < this.Width; IdxX++)
-                        //            {
-                        //                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                        //                {
-                        //                    Value = 0;
-                        //                    for (int i = 0; i < NumBytePerPixel; i++)
-                        //                        Value += (rgbValues[NumBytePerPixel * PixIdx + i + IdxChannel * this.SliceSize * this.Depth] << (i * 8));
-
-                        //                    this.SingleChannelImage[IdxChannel + ChannelStart].Data[PixIdx] = Value;
-                        //                }
-                        //                PixIdx++;
-                        //            }
-                        //    ChannelStart += NumChannels;
-                        //}
-
-
-
-                        break;
-
-                        #region old version based on loci
-                        loci.formats.@in.TiffReader MyTifReader = new loci.formats.@in.TiffReader();
-                        MyTifReader.setId(CurrentName);
-                        int ImageCount = MyTifReader.getImageCount();
-
-                        this.Width = MyTifReader.getSizeX();
-
-                        this.Height = MyTifReader.getSizeY();
-                        this.Depth = MyTifReader.getSizeZ();
-                        NumChannels = MyTifReader.getSizeC();
-                        NumBitsPerPixel = MyTifReader.getBitsPerPixel();
-                        string Order = MyTifReader.getDatasetStructureDescription();
-
-                        if (ImageCount == 1)
-                        {
-                            rgbValues = MyTifReader.openBytes(0);
-                        }
-                        else
-                        {
-                            rgbValues = new byte[this.Width * this.Height * this.Depth * NumChannels * (NumBitsPerPixel / 8)];
-                            int IdxImage = 0;
-                            int SizeImageBlock = this.Width * this.Height * this.Depth;
-                            int ImageSliceSize = this.Width * this.Height;
-
-                            for (int Z = 0; Z < this.Depth; Z++)
-                            {
-                                for (int IdxChannel = 0; IdxChannel < NumChannels; IdxChannel++)
-                                {
-                                    TmpTable = MyTifReader.openBytes(IdxImage);
-
-                                    Array.Copy(TmpTable, 0, rgbValues, IdxChannel * SizeImageBlock + Z * ImageSliceSize, TmpTable.Length);
-
-                                    IdxImage++;
-                                }
-                            }
-                            //byte[] TmpTable
-
-                        }
-                        break;
-                        #endregion
-                    #endregion
-                    #region JPG - FreeImage
-                    case "jpg":
-
-                        //if (!FreeImage.IsAvailable())
-                        //{
-                        //    Console.WriteLine("FreeImage.dll seems to be missing. Aborting.");
-                        //    return;
-                        //}
-
-                        //dib = new FIBITMAP();
-                        //if (!dib.IsNull) FreeImage.Unload(dib);
-
-                        //dib = FreeImage.Load(FREE_IMAGE_FORMAT.FIF_JPEG, CurrentName, FREE_IMAGE_LOAD_FLAGS.JPEG_ACCURATE);
-
-                        //this.Width = (int)FreeImage.GetWidth(dib);
-                        //this.Height = (int)FreeImage.GetHeight(dib);
-                        //this.Depth = 1;
-                        //NumChannels = 3;
-
-                        //rgbValues = new byte[this.Width * this.Height * NumChannels];
-
-                        //for (int i = 0; i < this.Height; i++)
-                        //{
-                        //    // Get scanline from the bottom part of the bitmap
-                        //    Scanline<RGBTRIPLE> scanline = new Scanline<RGBTRIPLE>(dib, i);
-
-                        //    // Get arrays of RGBTRIPPLEs that contain the bitmaps real pixel data
-                        //    // of the two scanlines.
-                        //    RGBTRIPLE[] rgbtBottom = scanline.Data;
-                        //    for (int IdxPix = 0; IdxPix < this.Width; IdxPix++)
-                        //    {
-                        //        rgbValues[(this.Height - i - 1) * this.Width + IdxPix] = rgbtBottom[IdxPix].rgbtRed;
-                        //        rgbValues[(this.Height - i - 1) * this.Width + this.Width * this.Height + IdxPix] = rgbtBottom[IdxPix].rgbtGreen;
-                        //        rgbValues[(this.Height - i - 1) * this.Width + 2 * this.Width * this.Height + IdxPix] = rgbtBottom[IdxPix].rgbtBlue;
-                        //    }
-                        //}
-                        //NumBitsPerPixel = (int)FreeImage.GetBPP(dib);
-
-                        //if (!dib.IsNull)
-                        //    FreeImage.Unload(dib);
-
-                        //// Make sure to set the handle to null so that it is clear that the handle is not pointing to a bitmap.
-                        //dib.SetNull();
-
-                        //this.Name = CurrentName;
-                        //this.SliceSize = this.Width * this.Height;
-                        //this.ImageSize = SliceSize * Depth;
-
-
-
-                        //goto NEXTLOOP;
-                        loci.formats.@in.JPEGReader MyJpegReader = new loci.formats.@in.JPEGReader();
-                        MyJpegReader.setId(CurrentName);
-                        rgbValues = MyJpegReader.openBytes(0);
-                        this.Width = MyJpegReader.getSizeX();
-                        this.Height = MyJpegReader.getSizeY();
-                        this.Depth = MyJpegReader.getSizeZ();
-                        NumChannels = MyJpegReader.getSizeC();
-                        NumBitsPerPixel = MyJpegReader.getBitsPerPixel();
-                        MyJpegReader.close();
-                        break;
-                    #endregion
-                    #region jpeg - BioFormats
-                    case "jpeg":
-                        loci.formats.@in.JPEGReader MyJpeg1Reader = new loci.formats.@in.JPEGReader();
-                        MyJpeg1Reader.setId(CurrentName);
-                        rgbValues = MyJpeg1Reader.openBytes(0);
-                        this.Width = MyJpeg1Reader.getSizeX();
-                        this.Height = MyJpeg1Reader.getSizeY();
-                        this.Depth = MyJpeg1Reader.getSizeZ();
-                        NumChannels = MyJpeg1Reader.getSizeC();
-                        NumBitsPerPixel = MyJpeg1Reader.getBitsPerPixel();
-                        MyJpeg1Reader.close();
-                        break;
-                    #endregion
                     #region stk - BioFormats
                     case "stk":
                         loci.formats.@in.MetamorphReader MystkReader = new loci.formats.@in.MetamorphReader();

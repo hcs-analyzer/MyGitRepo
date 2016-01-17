@@ -184,7 +184,7 @@
             this.panelForCellularPhenotypes = new System.Windows.Forms.Panel();
             this.groupBox28 = new System.Windows.Forms.GroupBox();
             this.panelForWellClasses = new System.Windows.Forms.Panel();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPageImageAccess = new System.Windows.Forms.TabPage();
             this.panelImageAccess = new System.Windows.Forms.Panel();
             this.radioButtonImageAccessNone = new System.Windows.Forms.RadioButton();
             this.groupBoxNone = new System.Windows.Forms.GroupBox();
@@ -214,6 +214,7 @@
             this.groupBoxManual = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBoxDefined = new System.Windows.Forms.GroupBox();
+            this.checkBoxDefaultField = new System.Windows.Forms.CheckBox();
             this.radioButtonImageAccessBuiltInKinetic = new System.Windows.Forms.RadioButton();
             this.radioButtonImageAccessBuiltIn = new System.Windows.Forms.RadioButton();
             this.radioButtonImageAccessCV7000 = new System.Windows.Forms.RadioButton();
@@ -245,7 +246,6 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBoxDefaultField = new System.Windows.Forms.CheckBox();
             this.tabControlWindowOption.SuspendLayout();
             this.tabPageImport.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -304,7 +304,7 @@
             this.tabPageClasses.SuspendLayout();
             this.groupBoxPhenotypes.SuspendLayout();
             this.groupBox28.SuspendLayout();
-            this.tabPage3.SuspendLayout();
+            this.tabPageImageAccess.SuspendLayout();
             this.panelImageAccess.SuspendLayout();
             this.groupBoxNone.SuspendLayout();
             this.groupBox10.SuspendLayout();
@@ -335,7 +335,7 @@
             this.tabControlWindowOption.Controls.Add(this.tabPage3D);
             this.tabControlWindowOption.Controls.Add(this.tabPage8);
             this.tabControlWindowOption.Controls.Add(this.tabPageClasses);
-            this.tabControlWindowOption.Controls.Add(this.tabPage3);
+            this.tabControlWindowOption.Controls.Add(this.tabPageImageAccess);
             this.tabControlWindowOption.Controls.Add(this.tabPageImageDispProperties);
             this.tabControlWindowOption.Location = new System.Drawing.Point(12, 27);
             this.tabControlWindowOption.Multiline = true;
@@ -1988,16 +1988,16 @@
             this.panelForWellClasses.Size = new System.Drawing.Size(178, 338);
             this.panelForWellClasses.TabIndex = 0;
             // 
-            // tabPage3
+            // tabPageImageAccess
             // 
-            this.tabPage3.Controls.Add(this.panelImageAccess);
-            this.tabPage3.Location = new System.Drawing.Point(4, 58);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(396, 401);
-            this.tabPage3.TabIndex = 13;
-            this.tabPage3.Text = "Image Access";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPageImageAccess.Controls.Add(this.panelImageAccess);
+            this.tabPageImageAccess.Location = new System.Drawing.Point(4, 58);
+            this.tabPageImageAccess.Name = "tabPageImageAccess";
+            this.tabPageImageAccess.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageImageAccess.Size = new System.Drawing.Size(396, 401);
+            this.tabPageImageAccess.TabIndex = 13;
+            this.tabPageImageAccess.Text = "Image Access";
+            this.tabPageImageAccess.UseVisualStyleBackColor = true;
             // 
             // panelImageAccess
             // 
@@ -2009,7 +2009,7 @@
             this.panelImageAccess.Controls.Add(this.radioButtonImageAccessDefined);
             this.panelImageAccess.Controls.Add(this.groupBoxManual);
             this.panelImageAccess.Controls.Add(this.groupBoxDefined);
-            this.panelImageAccess.Location = new System.Drawing.Point(0, 3);
+            this.panelImageAccess.Location = new System.Drawing.Point(0, 5);
             this.panelImageAccess.Name = "panelImageAccess";
             this.panelImageAccess.Size = new System.Drawing.Size(396, 398);
             this.panelImageAccess.TabIndex = 6;
@@ -2091,8 +2091,8 @@
             // 
             // comboBoxDescForBoundingMaxX
             // 
-            this.comboBoxDescForBoundingMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescForBoundingMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescForBoundingMaxX.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescForBoundingMaxX.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescForBoundingMaxX.FormattingEnabled = true;
@@ -2121,8 +2121,8 @@
             // 
             // comboBoxDescForBoundingMaxY
             // 
-            this.comboBoxDescForBoundingMaxY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescForBoundingMaxY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescForBoundingMaxY.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescForBoundingMaxY.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescForBoundingMaxY.FormattingEnabled = true;
@@ -2133,8 +2133,8 @@
             // 
             // comboBoxDescForBoundingMinX
             // 
-            this.comboBoxDescForBoundingMinX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescForBoundingMinX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescForBoundingMinX.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescForBoundingMinX.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescForBoundingMinX.FormattingEnabled = true;
@@ -2163,8 +2163,8 @@
             // 
             // comboBoxDescForBoundingMinY
             // 
-            this.comboBoxDescForBoundingMinY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescForBoundingMinY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescForBoundingMinY.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescForBoundingMinY.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescForBoundingMinY.FormattingEnabled = true;
@@ -2187,8 +2187,8 @@
             // 
             // comboBoxDescriptorForPosX
             // 
-            this.comboBoxDescriptorForPosX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescriptorForPosX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescriptorForPosX.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescriptorForPosX.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescriptorForPosX.FormattingEnabled = true;
@@ -2217,8 +2217,8 @@
             // 
             // comboBoxDescriptorForPosY
             // 
-            this.comboBoxDescriptorForPosY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescriptorForPosY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescriptorForPosY.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescriptorForPosY.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescriptorForPosY.FormattingEnabled = true;
@@ -2253,8 +2253,8 @@
             // 
             // comboBoxDescriptorForField
             // 
-            this.comboBoxDescriptorForField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxDescriptorForField.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxDescriptorForField.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.comboBoxDescriptorForField.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxDescriptorForField.FormattingEnabled = true;
@@ -2339,6 +2339,19 @@
             this.groupBoxDefined.TabIndex = 1;
             this.groupBoxDefined.TabStop = false;
             this.groupBoxDefined.Text = "                       ";
+            // 
+            // checkBoxDefaultField
+            // 
+            this.checkBoxDefaultField.AutoSize = true;
+            this.checkBoxDefaultField.Checked = true;
+            this.checkBoxDefaultField.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxDefaultField.Location = new System.Drawing.Point(170, 121);
+            this.checkBoxDefaultField.Name = "checkBoxDefaultField";
+            this.checkBoxDefaultField.Size = new System.Drawing.Size(85, 17);
+            this.checkBoxDefaultField.TabIndex = 16;
+            this.checkBoxDefaultField.Text = "Default Field";
+            this.checkBoxDefaultField.UseVisualStyleBackColor = true;
+            this.checkBoxDefaultField.CheckedChanged += new System.EventHandler(this.checkBoxDefaultField_CheckedChanged);
             // 
             // radioButtonImageAccessBuiltInKinetic
             // 
@@ -2548,9 +2561,9 @@
             // 
             // panelForCurrentLUTList
             // 
-            this.panelForCurrentLUTList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelForCurrentLUTList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panelForCurrentLUTList.AutoScroll = true;
             this.panelForCurrentLUTList.ContextMenuStrip = this.contextMenuStripForImageDisplay;
             this.panelForCurrentLUTList.Location = new System.Drawing.Point(6, 6);
@@ -2640,19 +2653,6 @@
             this.saveDefaultToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveDefaultToolStripMenuItem.Text = "Save as default";
             this.saveDefaultToolStripMenuItem.Click += new System.EventHandler(this.saveDefaultToolStripMenuItem_Click);
-            // 
-            // checkBoxDefaultField
-            // 
-            this.checkBoxDefaultField.AutoSize = true;
-            this.checkBoxDefaultField.Checked = true;
-            this.checkBoxDefaultField.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDefaultField.Location = new System.Drawing.Point(170, 121);
-            this.checkBoxDefaultField.Name = "checkBoxDefaultField";
-            this.checkBoxDefaultField.Size = new System.Drawing.Size(85, 17);
-            this.checkBoxDefaultField.TabIndex = 16;
-            this.checkBoxDefaultField.Text = "Default Field";
-            this.checkBoxDefaultField.UseVisualStyleBackColor = true;
-            this.checkBoxDefaultField.CheckedChanged += new System.EventHandler(this.checkBoxDefaultField_CheckedChanged);
             // 
             // FormForOptionsWindow
             // 
@@ -2749,7 +2749,7 @@
             this.tabPageClasses.ResumeLayout(false);
             this.groupBoxPhenotypes.ResumeLayout(false);
             this.groupBox28.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
+            this.tabPageImageAccess.ResumeLayout(false);
             this.panelImageAccess.ResumeLayout(false);
             this.panelImageAccess.PerformLayout();
             this.groupBoxNone.ResumeLayout(false);
@@ -2892,7 +2892,6 @@
         private System.Windows.Forms.GroupBox groupBoxPhenotypes;
         public System.Windows.Forms.Panel panelForCellularPhenotypes;
         private System.Windows.Forms.GroupBox groupBox28;
-        private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBoxDefined;
         public System.Windows.Forms.RadioButton radioButtonImageAccessHarmony;
         private System.Windows.Forms.GroupBox groupBoxManual;
@@ -2966,5 +2965,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStripForDir;
         private System.Windows.Forms.ToolStripMenuItem setCurrentScreeningDirectoryToolStripMenuItem;
         public System.Windows.Forms.CheckBox checkBoxDefaultField;
+        public System.Windows.Forms.TabPage tabPageImageAccess;
     }
 }

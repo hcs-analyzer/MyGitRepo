@@ -56,7 +56,7 @@ namespace HCSAnalyzer.Classes.Base_Classes.Viewers
             {
                 SaveFileDialog CurrSaveFileDialog = new SaveFileDialog();
 
-                CurrSaveFileDialog.Filter = "tif files (*.tif)|*.tif";
+                CurrSaveFileDialog.Filter = "TIF files (*.tif)|*.tif";
                 System.Windows.Forms.DialogResult Res = CurrSaveFileDialog.ShowDialog();
                 if (Res != System.Windows.Forms.DialogResult.OK)
                 {

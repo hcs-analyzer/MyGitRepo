@@ -253,6 +253,7 @@ namespace HCSAnalyzer
             this.spiralToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.simpleTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.basic3DToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wellsMergingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRC3DToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -308,7 +309,7 @@ namespace HCSAnalyzer
             this.ProcessModeEntireScreeningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripDropDownButtonDisplayMode = new System.Windows.Forms.ToolStripDropDownButton();
-            this.loadTiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.libTiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControlMain.SuspendLayout();
             this.tabPageDImRed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNewDimension)).BeginInit();
@@ -2390,7 +2391,8 @@ namespace HCSAnalyzer
             this.spiralToolStripMenuItem,
             this.simpleTestToolStripMenuItem,
             this.basic3DToolStripMenuItem,
-            this.loadTiffToolStripMenuItem});
+            this.loadTiffToolStripMenuItem,
+            this.libTiffToolStripMenuItem});
             this.testDisplayToolStripMenuItem.Name = "testDisplayToolStripMenuItem";
             this.testDisplayToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.testDisplayToolStripMenuItem.Text = "Test Display";
@@ -2506,6 +2508,13 @@ namespace HCSAnalyzer
             this.basic3DToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.basic3DToolStripMenuItem.Text = "Basic3D";
             this.basic3DToolStripMenuItem.Click += new System.EventHandler(this.basic3DToolStripMenuItem_Click);
+            // 
+            // loadTiffToolStripMenuItem
+            // 
+            this.loadTiffToolStripMenuItem.Name = "loadTiffToolStripMenuItem";
+            this.loadTiffToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.loadTiffToolStripMenuItem.Text = "Load Tiff";
+            this.loadTiffToolStripMenuItem.Click += new System.EventHandler(this.loadTiffToolStripMenuItem_Click);
             // 
             // wellsMergingToolStripMenuItem
             // 
@@ -3090,12 +3099,12 @@ namespace HCSAnalyzer
             this.toolStripDropDownButtonDisplayMode.Text = "Display Mode";
             this.toolStripDropDownButtonDisplayMode.MouseDown += new System.Windows.Forms.MouseEventHandler(this.toolStripDropDownButtonDisplayMode_MouseDown);
             // 
-            // loadTiffToolStripMenuItem
+            // libTiffToolStripMenuItem
             // 
-            this.loadTiffToolStripMenuItem.Name = "loadTiffToolStripMenuItem";
-            this.loadTiffToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.loadTiffToolStripMenuItem.Text = "Load Tiff";
-            this.loadTiffToolStripMenuItem.Click += new System.EventHandler(this.loadTiffToolStripMenuItem_Click);
+            this.libTiffToolStripMenuItem.Name = "libTiffToolStripMenuItem";
+            this.libTiffToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.libTiffToolStripMenuItem.Text = "LibTiff";
+            this.libTiffToolStripMenuItem.Click += new System.EventHandler(this.libTiffToolStripMenuItem_Click);
             // 
             // HCSAnalyzer
             // 
@@ -3453,6 +3462,7 @@ namespace HCSAnalyzer
         private ToolStripSeparator toolStripSeparator24;
         private ToolStripMenuItem fACSToolStripMenuItem;
         private ToolStripMenuItem loadTiffToolStripMenuItem;
+        private ToolStripMenuItem libTiffToolStripMenuItem;
     }
 }
 

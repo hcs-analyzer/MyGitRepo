@@ -21,11 +21,20 @@ namespace HCSAnalyzer.Classes.General_Types
     public class cImageAccessor
     {
         public string InitialPath = "";
-        public eImagingPlatformType ImagingPlatformType;
+        eImagingPlatformType ImagingPlatformType;
         public int NumberOfChannels = 1;
         public int Field = 1;
         public bool IsThumbnail = false;
         // public List<cImageMetaInfo> ListImageMetaInfo = null;
+
+        public void SetUpImagingPlatFormType(eImagingPlatformType ImagingPlatformType)
+        {
+            this.ImagingPlatformType = ImagingPlatformType;
+        }
+        public eImagingPlatformType GetImagingPlatFormType()
+        {
+            return this.ImagingPlatformType;
+        }
 
         public cImageAccessor(eImagingPlatformType ImagingPlatformType)
         {

@@ -794,3 +794,7 @@ C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyze
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyzer.HCSAnalyzer.resources
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyzer.Properties.Resources.resources
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.GenerateResource.Cache
+C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\bin\x86\Release\BitMiracle.LibTiff.NET.dll
+C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\bin\x86\Release\BitMiracle.LibTiff.NET.xml
+C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\bin\x86\Release\BitMiracle.LibJpeg.NET.dll
+C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\bin\x86\Release\BitMiracle.LibJpeg.NET.xml
