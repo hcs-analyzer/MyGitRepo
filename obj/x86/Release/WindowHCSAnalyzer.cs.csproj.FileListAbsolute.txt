@@ -794,10 +794,6 @@ C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyze
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyzer.HCSAnalyzer.resources
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\HCSAnalyzer.Properties.Resources.resources
 C:\Users\Thierry\Documents\GitHub\MyGitRepo\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.GenerateResource.Cache
-F:\HCSA_GIT\MyGitRepo\bin\x86\Release\HCSAnalyzer.exe.config
-F:\HCSA_GIT\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.ResolveComReference.cache
-F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.exe
-F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.pdb
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\FreeImageNET.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\FreeImage.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\Images\DarkLogo.png
@@ -805,6 +801,7 @@ F:\HCSA_GIT\MyGitRepo\bin\x86\Release\opencv_core231.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\opencv_imgproc231.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\SQLite.Interop.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\WhatsNew.docx
+F:\HCSA_GIT\MyGitRepo\bin\x86\Release\HCSAnalyzer.exe.config
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\HCSAnalyzer.exe
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\HCSAnalyzer.pdb
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\Accord.dll
@@ -922,6 +919,7 @@ F:\HCSA_GIT\MyGitRepo\bin\x86\Release\msvcm90.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\msvcp90.dll
 F:\HCSA_GIT\MyGitRepo\bin\x86\Release\msvcr90.dll
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csprojResolveAssemblyReference.cache
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.ResolveComReference.cache
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.Cell_by_Cell_and_DB.FormForHeterogeneityAnalysis.resources
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.Cell_by_Cell_and_DB.Simulator.Forms.FormForModelsHistory.resources
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.Cell_by_Cell_and_DB.FormForSingleCellClassifOptions.resources
@@ -1066,3 +1064,5 @@ F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.GUI.UserControlNewRichTextBox.
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.HCSAnalyzer.resources
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.Properties.Resources.resources
 F:\HCSA_GIT\MyGitRepo\obj\x86\Release\WindowHCSAnalyzer.cs.csproj.GenerateResource.Cache
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.exe
+F:\HCSA_GIT\MyGitRepo\obj\x86\Release\HCSAnalyzer.pdb
