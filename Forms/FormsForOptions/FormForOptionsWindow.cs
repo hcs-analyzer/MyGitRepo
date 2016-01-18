@@ -69,26 +69,27 @@ namespace HCSAnalyzer
             cGlobalInfo.ImageAccessor.NumberOfChannels = (int)this.numericUpDownImageAccessNumberOfChannels.Value;
             cGlobalInfo.ImageAccessor.InitialPath = this.textBoxImageAccesImagePath.Text;
             if (this.radioButtonImageAccessManual.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.MANUAL;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.MANUAL);
             else if (this.radioButtonImageAccessHarmony.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.HARMONY;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.HARMONY);
             else if (this.radioButtonImageAccessImageXpress.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.IMAGEXPRESS;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.IMAGEXPRESS);
             else if (this.radioButtonImageAccessHarmony35.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.HARMONY35;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.HARMONY35);
             else if (this.radioButtonImageAccessCellomics.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.CELLOMICS;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.CELLOMICS);
             else if (this.radioButtonImageAccessINCell.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.INCELL;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.INCELL);
             else if (this.radioButtonImageAccessCV7000.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.CV7000;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.CV7000);
             else if (this.radioButtonImageAccessBuiltIn.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.BUILTIN; 
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.BUILTIN); 
             else if (this.radioButtonImageAccessBuiltInKinetic.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.KINETIC;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.KINETIC);
             else if (this.radioButtonImageAccessNone.Checked)
-                cGlobalInfo.ImageAccessor.ImagingPlatformType = Classes.General_Types.eImagingPlatformType.NONE;
+                cGlobalInfo.ImageAccessor.SetUpImagingPlatFormType(Classes.General_Types.eImagingPlatformType.NONE);
 
+            
         
         }
 

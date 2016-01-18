@@ -71,6 +71,7 @@ namespace HCSAnalyzer.Classes.DataAnalysis
 
             ana.analyzePairs(t, param);
             analysis.results.Result[] res = ana.getSortedResults();
+            if (res.Length == 0) return;
 
             List<string[]> ListValues = new List<string[]>();
             List<bool> ListIscolor = new List<bool>();

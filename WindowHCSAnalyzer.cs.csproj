@@ -225,6 +225,12 @@
     <Reference Include="AlgLib">
       <HintPath>Dlls\AlgLib.dll</HintPath>
     </Reference>
+    <Reference Include="BitMiracle.LibJpeg.NET">
+      <HintPath>Dlls\LibJpeg\BitMiracle.LibJpeg.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="BitMiracle.LibTiff.NET">
+      <HintPath>Dlls\LibTiff\BitMiracle.LibTiff.NET.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV, Version=2.4.9.1847, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dlls\OpenCV\Emgu.CV.dll</HintPath>
@@ -232,9 +238,6 @@
     <Reference Include="Emgu.Util, Version=2.4.9.1847, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dlls\OpenCV\Emgu.Util.dll</HintPath>
-    </Reference>
-    <Reference Include="FreeImageNET">
-      <HintPath>Dlls\FreeImage\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="HCSPlugin">
       <HintPath>Dlls\HCSPlugin.dll</HintPath>

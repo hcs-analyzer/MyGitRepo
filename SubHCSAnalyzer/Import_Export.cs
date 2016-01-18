@@ -469,45 +469,15 @@ namespace HCSAnalyzer
             FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Plate Name"]].Cells[2].Value = "Plate Name";
             FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Plate Name"]].Cells[1].Value = true;
 
-            if (FromExcel.ListPosPropertyOnGUI["Concentration"] != -1)
+            foreach (var item in cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
             {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Concentration"]].Cells[2].Value = "Concentration";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Concentration"]].Cells[1].Value = true;
-            }
+                if (item.Name == "Plate Name") continue;
+                if (FromExcel.ListPosPropertyOnGUI[item.Name] != -1)
+                {
+                    FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI[item.Name]].Cells[2].Value = item.Name;
+                    FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI[item.Name]].Cells[1].Value = true;
+                }
 
-            if (FromExcel.ListPosPropertyOnGUI["Locus ID"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Locus ID"]].Cells[2].Value = "Locus ID";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Locus ID"]].Cells[1].Value = true;
-            }
-            if (FromExcel.ListPosPropertyOnGUI["Cell Line"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Cell Line"]].Cells[2].Value = "Cell Line";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Cell Line"]].Cells[1].Value = true;
-            }
-
-            if (FromExcel.ListPosPropertyOnGUI["Classification Confidence"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Classification Confidence"]].Cells[2].Value = "Classification Confidence";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Classification Confidence"]].Cells[1].Value = true;
-            }
-
-            if (FromExcel.ListPosPropertyOnGUI["Compound Name"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Compound Name"]].Cells[2].Value = "Compound Name";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Compound Name"]].Cells[1].Value = true;
-            }
-            
-            if (FromExcel.ListPosPropertyOnGUI["Well Class"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Class"]].Cells[2].Value = "Well Class";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Class"]].Cells[1].Value = true;
-            }
-
-            if (FromExcel.ListPosPropertyOnGUI["Group"] != -1)
-            {
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Group"]].Cells[2].Value = "Group";
-                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Group"]].Cells[1].Value = true;
             }
 
             if (FromExcel.ModeWell == 2)
