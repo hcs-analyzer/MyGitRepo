@@ -21,6 +21,8 @@ using System.IO;
 using System.Net;
 using HCSAnalyzer.Classes.ImageAnalysis.FormsForImages;
 using HCSAnalyzer.Classes.General_Types;
+using System.Threading;
+using System.Diagnostics;
 
 namespace ImageAnalysis
 {
@@ -726,6 +728,7 @@ namespace ImageAnalysis
                     #region tiff - tif - LibTiff
                     case "tiff" :
                     case "tif":
+                        //var watch = Stopwatch.StartNew();
                         BitMiracle.LibTiff.Classic.Tiff image = BitMiracle.LibTiff.Classic.Tiff.Open(CurrentName, "r");
 
                         if (image == null) return;
@@ -934,6 +937,8 @@ namespace ImageAnalysis
                             }
                             else
                             {
+                                
+                                //this.SingleChannelImage[0].Data =  
                                 for (int row = 0; row < this.Height; row++)
                                 {
                                     image.ReadScanline(buf, row);
@@ -954,6 +959,8 @@ namespace ImageAnalysis
                         #endregion
 
                         image.Close(); // or image.Dispose();
+                        //watch.Stop();
+                        //cGlobalInfo.WindowHCSAnalyzer.richTextBoxConsole.AppendText("Bit = " + watch.ElapsedMilliseconds + "\n");
                         cGlobalInfo.BufferedImage = this;
                         return;
 
@@ -1191,7 +1198,7 @@ namespace ImageAnalysis
                             PixIdx++;
                         }
 
-            NEXTLOOP: ;
+                NEXTLOOP: ;
 
                 ChannelStart += NumChannels;
             }

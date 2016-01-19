@@ -709,7 +709,7 @@ namespace HCSAnalyzer.Classes.General_Types
 
                 Name += "*Z01C*.tif";
 
-                string[] ListChannels = Directory.GetFiles(NewDir, Name, SearchOption.TopDirectoryOnly);
+                string[] ListChannels = Directory.GetFiles(NewDir, Name, SearchOption.AllDirectories);
                 //  if(NumberOfChannels>ListChannels.Count()) NumberOfChannels = ListChannels.Count();
                 NumberOfChannels = ListChannels.Count();
 

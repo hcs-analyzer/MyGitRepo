@@ -91,6 +91,7 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Controls\LogoType1.ico</ApplicationIcon>
@@ -226,10 +227,11 @@
       <HintPath>Dlls\AlgLib.dll</HintPath>
     </Reference>
     <Reference Include="BitMiracle.LibJpeg.NET">
-      <HintPath>Dlls\LibJpeg\BitMiracle.LibJpeg.NET.dll</HintPath>
+      <HintPath>Dlls\BitMiracle.LibJpeg.NET.dll</HintPath>
     </Reference>
-    <Reference Include="BitMiracle.LibTiff.NET">
-      <HintPath>Dlls\LibTiff\BitMiracle.LibTiff.NET.dll</HintPath>
+    <Reference Include="BitMiracle.LibTiff.NET, Version=2.4.528.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
+      <HintPath>packages\BitMiracle.LibTiff.NET.2.4.528.0\lib\net20\BitMiracle.LibTiff.NET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Emgu.CV, Version=2.4.9.1847, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1973,6 +1975,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
