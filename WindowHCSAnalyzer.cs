@@ -80,6 +80,7 @@ using System.Data.OleDb;
 using Kitware.VTK;
 using HCSAnalyzer.Cell_by_Cell_and_DB.Simulator.Classes;
 using HCSAnalyzer.GUI;
+
 //using FolderBrowser;
 
 //using HCSAnalyzer.Classes._3D;
@@ -102,7 +103,7 @@ namespace HCSAnalyzer
         public PlatesListForm PlateListWindow;
         cGlobalInfo GlobalInfo;
         CheckBox checkBoxDisplayClasses = new CheckBox();
-       // CheckBox checkBoxApplyTo_AllPlates = new CheckBox();
+        // CheckBox checkBoxApplyTo_AllPlates = new CheckBox();
 
         ContextMenuStrip contextMenuStripStatOptions = new ContextMenuStrip();
         ToolStripMenuItem _StatCVItem;
@@ -375,7 +376,7 @@ namespace HCSAnalyzer
                 }
                 else if (FileMode == 1)
                 {
-                    CSVtoDB(LArg[0],",","");
+                    CSVtoDB(LArg[0], ",", "");
 
                     return;
                 }
@@ -384,8 +385,8 @@ namespace HCSAnalyzer
             File.Delete("HCSA.log");
 
 
-        
-            
+
+
 
             //  this.BringToFront();
             //MyLoad();
@@ -616,7 +617,7 @@ namespace HCSAnalyzer
             {
                 for (int col = 0; col < cGlobalInfo.CurrentScreening.Columns; col++)
                 {
-                    if (cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked==false)//(cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
+                    if (cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked == false)//(cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
                     {
                         int NumberOfPlates = cGlobalInfo.CurrentScreening.ListPlatesActive.Count;
 
@@ -648,13 +649,13 @@ namespace HCSAnalyzer
                 return;
             }
 
-            
+
 
             if ((PosY == 0) && (PosX > 0))
             {
                 for (int row = 0; row < cGlobalInfo.CurrentScreening.Rows; row++)
                 {
-                    if (cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked==false)// (cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
+                    if (cGlobalInfo.WindowHCSAnalyzer.ProcessModeCurrentPlateOnlyToolStripMenuItem.Checked == false)// (cGlobalInfo.CurrentScreening.IsSelectionApplyToAllPlates)
                     {
                         int NumberOfPlates = cGlobalInfo.CurrentScreening.ListPlatesActive.Count;
 
@@ -1133,7 +1134,7 @@ namespace HCSAnalyzer
 
                 Pos[1] = Convert.ToInt16(PosString[0].ToString().ToUpper().ToCharArray()[0]) - 64;
                 string PosY = PosString.Remove(0, 1);
-               // PosY = PosY.Remove(PosY.Length-1);
+                // PosY = PosY.Remove(PosY.Length-1);
                 bool IsTrue = int.TryParse(PosY, out Pos[0]);
 
                 if (!IsTrue) return null;
@@ -1178,7 +1179,7 @@ namespace HCSAnalyzer
                 CSVsr = new CsvFileReader(PathName);
                 CSVsr.Separator = this.Delimiter.ToCharArray()[0];
                 CsvRow OriginalNames = new CsvRow();
-                
+
                 if (!CSVsr.ReadRow(OriginalNames))
                 {
                     CSVsr.Close();
@@ -1194,7 +1195,7 @@ namespace HCSAnalyzer
                 List<string> ListPlatesToBeExcluded = CSVWindow.GetListPlatesToBeExcluded();
 
                 List<string> ListPhenotypeNames = new List<string>();
-                
+
                 int[] ColsForDescriptors = GetColsIdxFor("Descriptor", CSVWindow);
 
                 FormForProgress ProgressWindow = new FormForProgress();
@@ -1214,7 +1215,7 @@ namespace HCSAnalyzer
                 this.CompleteReportString += "Time stamp: " + DateTime.Now.ToString() + " \n";
 
                 if (CSVsr.ReadRow(CurrentDesc) == false) return;
-                
+
                 // Main loop over over the file rows
                 do
                 {
@@ -1358,14 +1359,14 @@ namespace HCSAnalyzer
                             {
                                 bool IsAdded = false;
                                 for (int i = 0; i < ListPhenotypeNames.Count; i++)
-			                    {
+                                {
                                     if (ListPhenotypeNames[i] == CurrentPhenoName)
                                     {
                                         Signature.Add(i);
                                         IsAdded = true;
                                         break;
                                     }
-			                    }
+                                }
                                 if (IsAdded == false)  // time to add a new phenotype
                                 {
                                     cGlobalInfo.ListCellularPhenotypes[ListPhenotypeNames.Count].Name = CurrentPhenoName;
@@ -1422,7 +1423,7 @@ namespace HCSAnalyzer
 
                             // NEXTSIGNATURE: ;
 
-                        } while ((CurrentWellPos == OriginalWellPos)&&(OriginalPlatePlateName == ConvertedName));
+                        } while ((CurrentWellPos == OriginalWellPos) && (OriginalPlatePlateName == ConvertedName));
                         #endregion
 
                         TotalWellNumber++;
@@ -1442,9 +1443,9 @@ namespace HCSAnalyzer
                         }
 
 
-                    
 
-                    NEXTSIGNATURE: ;
+
+                    NEXTSIGNATURE:;
 
                     } while (OriginalPlatePlateName == ConvertedName);
                     #endregion
@@ -1452,7 +1453,7 @@ namespace HCSAnalyzer
                     SQDB.CloseConnection();
                 } while (true); // till the end of the file
 
-            NEXTLOOP: ;
+            NEXTLOOP:;
                 ProgressWindow.Close();
 
                 // --------- final report -----------
@@ -1573,7 +1574,7 @@ namespace HCSAnalyzer
             LoadCellByCellDB(PlateDim, SelectedPath, IsDisplayPlateSelection);
 
             // look for an option file in the directory
-            string[] ListFilesOption = Directory.GetFiles(SelectedPath, "*.opt",  SearchOption.TopDirectoryOnly);
+            string[] ListFilesOption = Directory.GetFiles(SelectedPath, "*.opt", SearchOption.TopDirectoryOnly);
 
             if (ListFilesOption.Length == 0) return;
 
@@ -1591,8 +1592,8 @@ namespace HCSAnalyzer
             cGlobalInfoToBeExported GlobalInfoToBeExported = new cGlobalInfoToBeExported();
             GlobalInfoToBeExported.Load(PathForOption);
 
-            if(cGlobalInfo.CurrentScreening!=null)
-            cGlobalInfo.CurrentScreening.SetDirectory(SelectedPath);
+            if (cGlobalInfo.CurrentScreening != null)
+                cGlobalInfo.CurrentScreening.SetDirectory(SelectedPath);
         }
 
         private void classViewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1763,16 +1764,16 @@ namespace HCSAnalyzer
                     foreach (var item in itemPlate.ListActiveWells)
                         ListWell.Add(item);
 
-                    dt = ListWell.GetAverageDescriptorValues(cGlobalInfo.CurrentScreening.ListDescriptors.GetActiveDescriptors(), false, false);   
-                    
+                    dt = ListWell.GetAverageDescriptorValues(cGlobalInfo.CurrentScreening.ListDescriptors.GetActiveDescriptors(), false, false);
+
                     MachineLearning.SelectedClusterer = MachineLearning.BuildClusterer(ParamAlgoForClustering, dt);
-                        if (MachineLearning.SelectedClusterer == null) return;
- 
+                    if (MachineLearning.SelectedClusterer == null) return;
+
                     //----------- build the clusters -----------------
                     MachineLearning.SelectedClusterer.Compute();
                     MachineLearning.Classes = MachineLearning.SelectedClusterer.GetClasses()[0];
                     string Info = MachineLearning.SelectedClusterer.GetInfo();
-                    Info = "\n---------------------------------------\n" + itemPlate.GetName() + "\n---------------------------------------\n" + Info ;
+                    Info = "\n---------------------------------------\n" + itemPlate.GetName() + "\n---------------------------------------\n" + Info;
                     cGlobalInfo.WindowHCSAnalyzer.richTextBoxConsole.AppendText(Info);
 
                     if (MachineLearning.Classes.Max() >= cGlobalInfo.ListWellClasses.Count)
@@ -1811,7 +1812,7 @@ namespace HCSAnalyzer
                 MachineLearning.SelectedClusterer.Compute();
                 MachineLearning.Classes = MachineLearning.SelectedClusterer.GetClasses()[0];
                 string Info = MachineLearning.SelectedClusterer.GetInfo();
-                Info = "\n---------------------------------------\n" + cGlobalInfo.CurrentScreening.GetName() + "\n---------------------------------------\n" + Info ;
+                Info = "\n---------------------------------------\n" + cGlobalInfo.CurrentScreening.GetName() + "\n---------------------------------------\n" + Info;
 
                 cGlobalInfo.WindowHCSAnalyzer.richTextBoxConsole.AppendText(Info);
 
@@ -2834,7 +2835,7 @@ namespace HCSAnalyzer
                 CDW.Title = SubTitle + " - " + ListPlatesToProcess.Count + " plates";
                 CDW.Run();
                 CDW.Display();
-            #endregion
+                #endregion
             }
         }
 
@@ -3053,6 +3054,7 @@ namespace HCSAnalyzer
                 MA.Is_BriefReport = true;
                 MA.CurrentScreening = cGlobalInfo.CurrentScreening;
                 MA.Run();
+                if (MA.GetOutPut() == null) return;
 
                 cDesignerTab SubDT = new cDesignerTab();
                 foreach (var item in MA.GetOutPut())
@@ -4260,7 +4262,7 @@ namespace HCSAnalyzer
                     }
                     ListPlatesForZFactor.Add(TmpPlate);
                 }
-            #endregion
+                #endregion
 
                 cExtendedTable ET = new cExtendedTable(new cExtendedTable(ListZ));
                 ET[0].ListTags = new List<object>();
@@ -4307,7 +4309,9 @@ namespace HCSAnalyzer
         private void toolStripMenuItemLoadImage_Click(object sender, EventArgs e)
         {
             OpenFileDialog CurrOpenFileDialog = new OpenFileDialog();
-            CurrOpenFileDialog.Filter = "TIF Files (*.tif)|*.tif|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|BMP Files (*.bmp)|*.bmp|Cellomics Files (*.c01)|*.c01|Zeiss LSM Files (*.lsm)|*.lsm|MetaMorph Stack  STK Files (*.stk)|*.stk";
+
+            
+            CurrOpenFileDialog.Filter = "Tagged Image File Format Files (*.tif;*.tiff)|*.tif;*.tiff|JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG Files (*.png)|*.png|GIF Files (*.gif)|*.gif|BMP Files (*.bmp)|*.bmp|Cellomics Files (*.c01)|*.c01|Zeiss LSM Files (*.lsm)|*.lsm|MetaMorph Stack  STK Files (*.stk)|*.stk";
             //CurrOpenFileDialog.Filter = "Tif files (*.tif)|*.tif";
             DialogResult Res = CurrOpenFileDialog.ShowDialog();
             if (Res != DialogResult.OK) return;
@@ -5119,7 +5123,7 @@ namespace HCSAnalyzer
                 CDW.Title = SubTitle + " - " + ListPlatesToProcess.Count + " plates";
                 CDW.Run();
                 CDW.Display();
-            #endregion
+                #endregion
             }
         }
 
@@ -5370,7 +5374,7 @@ namespace HCSAnalyzer
                 CDW.Title = SubTitle + " - " + ListPlatesToProcess.Count + " plates";
                 CDW.Run();
                 CDW.Display();
-            #endregion
+                #endregion
             }
         }
 
@@ -5776,7 +5780,7 @@ namespace HCSAnalyzer
                 CDW.Title = SubTitle + " - " + ListPlatesToProcess.Count + " plates";
                 CDW.Run();
                 CDW.Display();
-            #endregion
+                #endregion
             }
 
         }
@@ -6273,7 +6277,7 @@ namespace HCSAnalyzer
 
                     }
                     cWell NewWell = new cWell(LDesc, X + 1, Y + 1, MergedScreening, NewPlate);
-                   // NewWell.SetCpdName("Well [" + (X + 1) + ":" + (Y + 1) + "]");
+                    // NewWell.SetCpdName("Well [" + (X + 1) + ":" + (Y + 1) + "]");
                     NewPlate.AddWell(NewWell);
 
                 }
@@ -7156,7 +7160,7 @@ namespace HCSAnalyzer
                 return;
             }
 
-            FormForPlateSelection FFP = new FormForPlateSelection(ListFiles,true);
+            FormForPlateSelection FFP = new FormForPlateSelection(ListFiles, true);
             if (FFP.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
             string[] ListFilesForPlates = FFP.GetListPlatesSelected();
 
@@ -7426,7 +7430,7 @@ namespace HCSAnalyzer
             MyProcess.StartInfo.FileName = "I:\\CardiacSpheroids\\5 min 120615\\B02\\results\\post\\Original_B02_post.avi";// "wmplayer.exe";
 
             MyProcess.Start();
-            
+
 
             return;
 
@@ -7624,10 +7628,10 @@ namespace HCSAnalyzer
             else if (tabControlMainView.SelectedTab.Text == "1D Scatter")
             {
                 cGlobalInfo.CurrentScreening.GetCurrentDisplayPlate().Refresh1DScatter();
-            }       
+            }
             else if ((tabControlMainView.SelectedTab.Text == "Screening View"))//||((sender!=null)&&(sender.GetType().Name=="Panel")))
             {
-                if(sender==null) return;
+                if (sender == null) return;
 
                 //if (sender.GetType().Name == "Panel")
                 //{
@@ -7647,7 +7651,7 @@ namespace HCSAnalyzer
                     string SenderName = ((ToolStripComboBox)sender).Name;
                     if (SenderName == "toolStripcomboBoxPlateList") return;
                 }
-                else if(sender.GetType().Name == "CheckedListBox")
+                else if (sender.GetType().Name == "CheckedListBox")
                 {
                     string SenderName = ((CheckedListBox)sender).Name;
                     if (SenderName == "checkedListBoxActiveDescriptors") return;
@@ -7682,7 +7686,7 @@ namespace HCSAnalyzer
 
         private void visualizationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(cGlobalInfo.CurrentScreening==null) return;
+            if (cGlobalInfo.CurrentScreening == null) return;
 
             singleCellToolStripMenuItem.Enabled = cGlobalInfo.CurrentScreening.ListDescriptors.GetActiveDescriptor().IsConnectedToDatabase;
         }
@@ -7703,7 +7707,7 @@ namespace HCSAnalyzer
 
             // if (CSVFeedBackWindow == null) return;
             // if (CSVFeedBackWindow.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-            cConvertCSVtoDB CCTODB = CSVtoDB(CurrOpenFileDialog.FileNames[0], CSVFeedBackWindow.GetDelimiter(),"");
+            cConvertCSVtoDB CCTODB = CSVtoDB(CurrOpenFileDialog.FileNames[0], CSVFeedBackWindow.GetDelimiter(), "");
             if (CCTODB == null) return;
 
 
@@ -7766,23 +7770,23 @@ namespace HCSAnalyzer
             Sep[0] = "\\";
 
             Dictionary<string, string> CurrentPlateDico = new Dictionary<string, string>();
-          //  string[] FirstListImages = Directory.GetFiles(PlateDirectories[i], TmpPlateName + "_*.C01", SearchOption.AllDirectories);
+            //  string[] FirstListImages = Directory.GetFiles(PlateDirectories[i], TmpPlateName + "_*.C01", SearchOption.AllDirectories);
 
             foreach (var item in ListFilesForPlates)
             {
                 string[] Res = item.Split(Sep, StringSplitOptions.RemoveEmptyEntries);
-                string CurrentName = Res[Res.Length-1];
+                string CurrentName = Res[Res.Length - 1];
 
                 if (CurrentPlateDico.ContainsKey(CurrentName.Remove(CurrentName.Length - 4))) continue;
 
-                CurrentPlateDico.Add(CurrentName.Remove(CurrentName.Length-4), item);
+                CurrentPlateDico.Add(CurrentName.Remove(CurrentName.Length - 4), item);
 
             }
 
             string[] ListTypes = CurrentPlateDico.Keys.ToArray();
 
             // plates selection GUI
-            FormForPlateSelection FFP = new FormForPlateSelection(ListTypes,false);
+            FormForPlateSelection FFP = new FormForPlateSelection(ListTypes, false);
             FFP.Text = "Object Types Selection";
 
             if (FFP.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
@@ -7804,9 +7808,9 @@ namespace HCSAnalyzer
             Sep[0] = "\\";
             string[] TmpSplit = ListFilesForPlates[0].Split(Sep, StringSplitOptions.RemoveEmptyEntries);
 
-           //TmpSplit[TmpSplit.Length-1].Replace(".txt",".csv");
+            //TmpSplit[TmpSplit.Length-1].Replace(".txt",".csv");
             string TPath = Path + "\\" + TmpSplit[TmpSplit.Length - 1].Replace(".txt", ".csv");
-                
+
             Sep[0] = ",";  // specifically for the bounding box processing
 
             FormForProgress MyProgressBar = new FormForProgress();
@@ -7815,21 +7819,21 @@ namespace HCSAnalyzer
             MyProgressBar.Show();
 
 
-            for (int i = 0; i < ListFilesForPlates.Length ; i++)
+            for (int i = 0; i < ListFilesForPlates.Length; i++)
             {
                 MyProgressBar.richTextBoxForComment.AppendText(ListFilesForPlates[i]);
                 MyProgressBar.richTextBoxForComment.Update();
 
                 StreamWriter stream = new StreamWriter(TPath, true, Encoding.ASCII);
-                
+
                 #region process the header
                 string CurrentFile = ListFilesForPlates[i];
                 CsvFileReader CSVReader = new CsvFileReader(CurrentFile);
                 CSVReader.Separator = '\t';
-                
+
                 CSVReader.ReadRow(CurrentRow);
                 // let's take care of the header first
-                while (CurrentRow[0]!="Plate Name")
+                while (CurrentRow[0] != "Plate Name")
                 {
                     CSVReader.ReadRow(CurrentRow);
                 }
@@ -7853,16 +7857,16 @@ namespace HCSAnalyzer
                 int IndexCompound = -1;
                 int IndexConcentration = -1;
                 int IndexCellcount = -1;
-                
+
                 int NumDesc = Descs.Count;
 
                 for (int j = 0; j < Descs.Count; j++)
-			    {
+                {
                     if (Descs[j] == "Bounding Box")
                     {
                         TobeWritten += "X_Min,Y_Min,X_Max,Y_Max,";
                         IdxBoundingBox = j;
-                       // NumDesc += 3; 
+                        // NumDesc += 3; 
                     }
                     else if (Descs[j] == "Row")
                     {
@@ -7890,8 +7894,8 @@ namespace HCSAnalyzer
                     }
                     else
                         TobeWritten += Descs[j] + ",";
-			 
-			    }
+
+                }
 
                 TobeWritten = TobeWritten.Remove(TobeWritten.Length - 1);
 
@@ -7917,7 +7921,7 @@ namespace HCSAnalyzer
                 while (!CSVReader.EndOfStream)
                 {
                     CSVReader.ReadRow(CurrentRow);
-                    TobeWritten = PlateName+",";
+                    TobeWritten = PlateName + ",";
                     for (int j = 0; j < Descs.Count; j++)
                     {
                         if ((IdxBoundingBox > -1) && (j == IdxBoundingBox))
@@ -7933,9 +7937,9 @@ namespace HCSAnalyzer
                         }
                         else if (j == IndexRow)
                         {
-                            TobeWritten += ConvertPosition(int.Parse(CurrentRow[IndexCol]), int.Parse(CurrentRow[IndexRow]))+",";
+                            TobeWritten += ConvertPosition(int.Parse(CurrentRow[IndexCol]), int.Parse(CurrentRow[IndexRow])) + ",";
                         }
-                        else if ((j == IndexCol)||(j==IndexCellcount)||(j==IndexCompound)||(j==IndexConcentration))
+                        else if ((j == IndexCol) || (j == IndexCellcount) || (j == IndexCompound) || (j == IndexConcentration))
                         {
                             // do nothing
                         }
@@ -7949,7 +7953,7 @@ namespace HCSAnalyzer
 
                     }
                     TobeWritten = TobeWritten.Remove(TobeWritten.Length - 1);
-                    stream.WriteLine(TobeWritten );
+                    stream.WriteLine(TobeWritten);
                     IdxRow++;
                 }
 
@@ -7980,7 +7984,7 @@ namespace HCSAnalyzer
                 cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text = Path;
 
                 cGlobalInfoToBeExported GlobalInfoToBeExported = new cGlobalInfoToBeExported();
-                cGlobalInfo.OptionsWindow.TmpOptionPath = GlobalInfoToBeExported.Save(DBPath+"\\Options.opt");
+                cGlobalInfo.OptionsWindow.TmpOptionPath = GlobalInfoToBeExported.Save(DBPath + "\\Options.opt");
 
                 //cGlobalInfo.OptionsWindow.sav
             }
@@ -8026,7 +8030,7 @@ namespace HCSAnalyzer
                     LoadCSVAssay(files, false);
                     UpdateUIAfterLoading();
                 }
-                else 
+                else
                 {
                     cDisplaySingleImage DSI = new cDisplaySingleImage();
                     cImage Image = new cImage(files[0]);
@@ -8100,7 +8104,7 @@ namespace HCSAnalyzer
 
 
             string[] Sep = new string[1];
-            
+
 
             Dictionary<string, string> CurrentPlateDico = new Dictionary<string, string>();
             //  string[] FirstListImages = Directory.GetFiles(PlateDirectories[i], TmpPlateName + "_*.C01", SearchOption.AllDirectories);
@@ -8142,12 +8146,12 @@ namespace HCSAnalyzer
 
             if (ListFilesForPlates.Length == 0) return;
 
-            ListFilesForPlates = Directory.GetFiles(Path,"*Population - " + ListFilesForPlates[0] + "[*.txt", SearchOption.AllDirectories);
+            ListFilesForPlates = Directory.GetFiles(Path, "*Population - " + ListFilesForPlates[0] + "[*.txt", SearchOption.AllDirectories);
 
             cExtendedTable FinalTable = new cExtendedTable();
 
             FormForProgress MyProgressBar = new FormForProgress();
-           // int NumIterations = 
+            // int NumIterations = 
             MyProgressBar.Show();
             MyProgressBar.progressBar.Maximum = ListFilesForPlates.Length;
 
@@ -8189,13 +8193,13 @@ namespace HCSAnalyzer
                     M.SetInputData(FinalTable, TmpTable);
                     M.IsHorizontal = false;
                     M.IsAsObjectOnly = true;
-                    if(M.Run().IsSucceed)   FinalTable = M.GetOutPut();
+                    if (M.Run().IsSucceed) FinalTable = M.GetOutPut();
 
                 }
             }
 
             MyProgressBar.Close();
-            
+
             // process bounding box column
             for (int i = 0; i < FinalTable.Count; i++)
             {
@@ -8259,7 +8263,7 @@ namespace HCSAnalyzer
             TTF.IsIncludeImageAsComment = false;
             TTF.Run();
 
- 
+
 
 
             #region let's build the database now
@@ -8277,7 +8281,7 @@ namespace HCSAnalyzer
             {
                 // update image accessor
                 cGlobalInfo.OptionsWindow.radioButtonImageAccessDefined.Checked = false;
-               // cGlobalInfo.OptionsWindow.radioButtonImageAccessHarmony35.Checked = true;
+                // cGlobalInfo.OptionsWindow.radioButtonImageAccessHarmony35.Checked = true;
                 cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text = Path;
 
                 cGlobalInfoToBeExported GlobalInfoToBeExported = new cGlobalInfoToBeExported();
@@ -8520,14 +8524,16 @@ namespace HCSAnalyzer
         {
             //string filename = @"C:\Work\DMD plate 1_A01_T0001F001L01A01Z01C01.tif";
             OpenFileDialog OFD = new OpenFileDialog();
-            OFD.ShowDialog();
+            if (OFD.ShowDialog() != DialogResult.OK) return;
+
+
             LoadTIFF(OFD.FileName);
-            
+
         }
 
         public void LoadTIFF(string filename)
         {
-            
+
             FileStream fs = File.OpenRead(filename);
             byte[] data = new byte[fs.Length];
             fs.Read(data, 0, data.Length);
@@ -8539,7 +8545,7 @@ namespace HCSAnalyzer
             if (ID != 42) return; // not a tiff
             // get position
 
-            long InitShift =  (data[4] << 0) + (data[5] << 8) + (data[6] << 16) + (data[7] << 32);
+            long InitShift = (data[4] << 0) + (data[5] << 8) + (data[6] << 16) + (data[7] << 32);
 
             // jmp to to the start
             // extract the header
@@ -8583,12 +8589,12 @@ namespace HCSAnalyzer
                 long Value = 0;
 
 
-                if (DataType==4)
+                if (DataType == 4)
                 {
                     Value = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16) + (data[Shift++] << 32);
-                   // ValuesTag.Add(Value);
+                    // ValuesTag.Add(Value);
                 }
-                else if (DataType==2)
+                else if (DataType == 2)
                 {
                     if (TagId == 270)
                     {
@@ -8596,7 +8602,7 @@ namespace HCSAnalyzer
                         int TmpShift = (int)(DataOffset);
                         for (int Idx = 0; Idx < DataCount; Idx++)
                         {
-                            ImageDescription += (char)(data[TmpShift+Idx]);
+                            ImageDescription += (char)(data[TmpShift + Idx]);
                         }
                     }
                     if (TagId == 305)
@@ -8605,7 +8611,7 @@ namespace HCSAnalyzer
                         int TmpShift = (int)(DataOffset);
                         for (int Idx = 0; Idx < DataCount; Idx++)
                         {
-                            Software += (char)(data[TmpShift+Idx]);
+                            Software += (char)(data[TmpShift + Idx]);
                         }
                     }
                     if (TagId == 306)
@@ -8614,13 +8620,13 @@ namespace HCSAnalyzer
                         int TmpShift = (int)(DataOffset);
                         for (int Idx = 0; Idx < DataCount; Idx++)
                         {
-                            DateTime += (char)(data[TmpShift+Idx]);
+                            DateTime += (char)(data[TmpShift + Idx]);
                         }
                     }
                 }
                 else
                 {
-                    long DataOffset = (data[Shift++] << 0) + (data[Shift++] << 8)+  (data[Shift++] << 16) + (data[Shift++] << 32);
+                    long DataOffset = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16) + (data[Shift++] << 32);
 
                     if (DataType == 3)
                         Value = DataOffset;// (data[DataOffset] << 0) + (data[DataOffset + 1] << 8);
@@ -8630,25 +8636,34 @@ namespace HCSAnalyzer
 
                 switch (TagId)
                 {
-                    
-                    case 256: ImageWidth = (int)(Value);
+
+                    case 256:
+                        ImageWidth = (int)(Value);
                         break;
-                    case 257:ImageHeight = (int)(Value);
+                    case 257:
+                        ImageHeight = (int)(Value);
                         break;
-                    case 258: BitsPerSample = (int)(Value);
+                    case 258:
+                        BitsPerSample = (int)(Value);
                         break;
-                    case 259: Compression = (int)(Value);
-                    if (Compression != 1) return; // for the moment we don't manage compressed file.
+                    case 259:
+                        Compression = (int)(Value);
+                        if (Compression != 1) return; // for the moment we don't manage compressed file.
                         break;
-                    case 262:PhotometricInterpretation = (int)(Value);
+                    case 262:
+                        PhotometricInterpretation = (int)(Value);
                         break;
-                    case 273: StripOffsets = (int)(Value);
+                    case 273:
+                        StripOffsets = (int)(Value);
                         break;
-                    case 277: SamplesPerPixel = (int)(Value);
+                    case 277:
+                        SamplesPerPixel = (int)(Value);
                         break;
-                    case 278:RowsPerStrip = (int)(Value);
+                    case 278:
+                        RowsPerStrip = (int)(Value);
                         break;
-                    case 279:StripByteCounts = (int)(Value);
+                    case 279:
+                        StripByteCounts = (int)(Value);
                         break;
                     case 282:
                         XResolution = (double)(Value); //Convert.ToInt32("1001101", 2
@@ -8656,7 +8671,8 @@ namespace HCSAnalyzer
                     case 283:
                         YResolution = (double)(Value);
                         break;
-                    case 296:ResolutionUnit = (int)(Value);
+                    case 296:
+                        ResolutionUnit = (int)(Value);
                         break;
                 }
 
@@ -8664,7 +8680,7 @@ namespace HCSAnalyzer
             }
 
             Shift = StripOffsets;
-          //  Shift = 8;
+            Shift = 8;
             cImage Im = new cImage(ImageWidth, ImageHeight, 1, 1);
 
 
@@ -8692,10 +8708,185 @@ namespace HCSAnalyzer
             //3 = SHORT 16 - bit(2 - byte) unsigned integer.
             //4 = LONG 32 - bit(4 - byte) unsigned integer.
             //5 = RATIONAL Two LONGs: the first represents the numerator of a fraction; the second, the denominator.
-        //    int FieldType = (data[Shift++] << 0) + (data[Shift++] << 8);
-        //    int FieldSize = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16)+ (data[Shift++] << 32);
-        //    int FieldOffest = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16) + (data[Shift++] << 32);
+            //    int FieldType = (data[Shift++] << 0) + (data[Shift++] << 8);
+            //    int FieldSize = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16)+ (data[Shift++] << 32);
+            //    int FieldOffest = (data[Shift++] << 0) + (data[Shift++] << 8) + (data[Shift++] << 16) + (data[Shift++] << 32);
 
+        }
+
+        private void libTiffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog OFD = new OpenFileDialog();
+            OFD.ShowDialog();
+            //LoadTIFF(OFD.FileName);
+            BitMiracle.LibTiff.Classic.Tiff image = BitMiracle.LibTiff.Classic.Tiff.Open(OFD.FileName, "r");
+            // ... do stuff ...
+
+            BitMiracle.LibTiff.Classic.FieldValue[] value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGELENGTH);
+            int ImageHeight = value[0].ToInt();
+
+            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEWIDTH);
+            int ImageWidth = value[0].ToInt();
+            cImage Im = null;
+
+            value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PHOTOMETRIC);
+            #region RGB
+            if (value[0].ToString() == "RGB")
+            {
+                Im = new cImage(ImageWidth, ImageHeight, 1, 3);
+                int[] raster = new int[ImageHeight * ImageWidth];
+
+                value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.ORIENTATION);
+
+                if (image.ReadRGBAImage(ImageWidth, ImageHeight, raster))
+                {
+                    if (value[0].ToString() == "TOPLEFT")
+                    {
+                        for (int j = 0; j < ImageHeight; j++)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                            {
+
+                                Im.SingleChannelImage[0].Data[i + (ImageHeight - j - 1) * ImageWidth] = (raster[i + j * ImageWidth] & 0x000000FF) >> 00;
+                                Im.SingleChannelImage[1].Data[i + (ImageHeight - j - 1) * ImageWidth] = (raster[i + j * ImageWidth] & 0x0000FF00) >> 8;
+                                Im.SingleChannelImage[2].Data[i + (ImageHeight - j - 1) * ImageWidth] = (raster[i + j * ImageWidth] & 0x00FF0000) >> 16;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 0; j < ImageHeight; j++)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                            {
+                                Im.SingleChannelImage[0].Data[i + j * ImageWidth] = (raster[i + j * ImageWidth] & 0x000000FF) >> 00;
+                                Im.SingleChannelImage[1].Data[i + j * ImageWidth] = (raster[i + j * ImageWidth] & 0x0000FF00) >> 8;
+                                Im.SingleChannelImage[2].Data[i + j * ImageWidth] = (raster[i + j * ImageWidth] & 0x00FF0000) >> 16;
+                            }
+                        }
+
+                    }
+                }
+            }
+            #endregion
+            #region Palette
+            else if(value[0].ToString() == "PALETTE")
+            {
+
+              // TODO: TIFF Palette mode not impletemented yet
+
+
+              //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEDEPTH);
+              //  int ImageDepth = 1;
+              //  if (value!=null) 
+              //      ImageDepth = value[0].ToInt();
+
+              //  Im = new cImage(ImageWidth, ImageHeight, 1, 1);// image.StripSize(), 1);
+              //                                                 //   value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PLANARCONFIG);
+              //                                                 //   BitMiracle.LibTiff.Classic.PlanarConfig config = (BitMiracle.LibTiff.Classic.PlanarConfig)value[0].ToInt();
+
+              //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.BITSPERSAMPLE);
+
+              //  //  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PAGENUMBER);
+              ////  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.SAMPLESPERPIXEL);
+
+              ////  value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.COLORMAP);
+              //  int BitPerSample = value[0].ToInt();
+              //  int BytePerSample = BitPerSample >> 3;
+              //  int ScanLineSize = image.ScanlineSize();
+
+              //  int TagCount = image.GetTagListCount();
+              //  byte[] buf = new byte[ScanLineSize];
+
+              //  for (int row = 0; row < ImageHeight; row++)
+              //  {
+              //      image.ReadScanline(buf, row);
+              //      if (BitPerSample == 8)
+              //      {
+              //          for (int i = 0; i < ImageWidth; i++)
+              //              Im.SingleChannelImage[0].Data[i + row * ImageWidth] = buf[i];
+              //      }
+              //      else if (BitPerSample == 16)
+              //      {
+              //          for (int i = 0; i < ImageWidth; i++)
+              //              Im.SingleChannelImage[0].Data[i + row * ImageWidth] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+              //      }
+              //  }
+
+
+
+
+            }
+            #endregion
+            #region regular
+            else
+            {
+                Im = new cImage(ImageWidth, ImageHeight, 1, 1);// image.StripSize(), 1);
+                                                               //   value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.PLANARCONFIG);
+                                                               //   BitMiracle.LibTiff.Classic.PlanarConfig config = (BitMiracle.LibTiff.Classic.PlanarConfig)value[0].ToInt();
+
+                value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.BITSPERSAMPLE);
+                int BitPerSample = value[0].ToInt();
+                int BytePerSample = BitPerSample >> 3;
+                int ScanLineSize = image.ScanlineSize();
+
+                int TagCount = image.GetTagListCount();
+
+                //value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag);
+
+               // value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.IMAGEDEPTH);
+                // byte[] buf = new byte[image.StripSize()];
+                // for (int strip = 0; strip < image.NumberOfStrips(); strip++)
+                //     image.ReadEncodedStrip(strip, buf, 0, -1);
+
+                byte[] buf = new byte[ScanLineSize];
+
+                value = image.GetField(BitMiracle.LibTiff.Classic.TiffTag.ORIENTATION);
+
+                if ((value!=null)&&(value[0].ToString() == "TOPLEFT"))
+                {
+                    for (int row = 0; row < ImageHeight; row++)
+                    {
+                        image.ReadScanline(buf, row);
+                        if (BitPerSample == 8)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                                Im.SingleChannelImage[0].Data[i + (ImageHeight - row - 1) * ImageWidth] = buf[i];
+                        }
+                        else if (BitPerSample == 16)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                                Im.SingleChannelImage[0].Data[i + (ImageHeight - row - 1) * ImageWidth] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                        }
+                    }
+
+                }
+                else
+                {
+                    for (int row = 0; row < ImageHeight; row++)
+                    {
+                        image.ReadScanline(buf, row);
+                        if (BitPerSample == 8)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                                Im.SingleChannelImage[0].Data[i + row * ImageWidth] = buf[i];
+                        }
+                        else if (BitPerSample == 16)
+                        {
+                            for (int i = 0; i < ImageWidth; i++)
+                                Im.SingleChannelImage[0].Data[i + row * ImageWidth] = (buf[2 * i]) + (buf[2 * i + 1] << 8);
+                        }
+                    }
+                }
+
+            }
+            #endregion
+
+            image.Close(); // or image.Dispose();
+
+            cDisplaySingleImage DI = new cDisplaySingleImage();
+            DI.SetInputData(Im);
+            DI.Run();
         }
 
 

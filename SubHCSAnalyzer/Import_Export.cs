@@ -234,7 +234,6 @@ namespace HCSAnalyzer
 
                 UpdateUIAfterLoading();// LoadCSVAssay(CurrOpenFileDialog.FileNames, false);
 
-
                 cGlobalInfo.CurrentScreening.SetDirectory(CurrOpenFileDialog.FileNames[0].Remove(CurrOpenFileDialog.FileNames[0].Length - CurrOpenFileDialog.SafeFileNames[0].Length));
 
                 if (CurrOpenFileDialog.FileNames.Length > 1)
@@ -251,47 +250,273 @@ namespace HCSAnalyzer
                         }
                     }
                 }
-
             }
-
-
         }
 
-        private void ImportFiles(string[] FileNames)
+        private FormForImportExcel LoadCSVAssay(string[] FileNames, bool IsAppend)
         {
-            if (IsFileUsed(FileNames[0]))
+            if (cGlobalInfo.CurrentScreening == null) IsAppend = false;
+
+            FormInfoForFileImporter InfoForFileImporter = new FormInfoForFileImporter(FileNames[0]);
+            if (InfoForFileImporter.ShowDialog() != System.Windows.Forms.DialogResult.OK) return null;
+
+            if (IsAppend == false)
             {
-                MessageBox.Show("File currently used by another application.\n", "Loading error !", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (cGlobalInfo.CurrentScreening != null) cGlobalInfo.CurrentScreening.Close3DView();
+                cGlobalInfo.CurrentScreening = new cScreening("CSV imported Screening");
             }
 
-            bool ResultLoading = false;
+            FormForImportExcel FromExcel = new FormForImportExcel();
 
-            if (FileNames[0].Remove(0, FileNames[0].Length - 4) == ".mtr")
+            //    char Separator = ',';
+            if (InfoForFileImporter.radioButtonSemiColon.Checked) FromExcel.Separator = ';';
+            else if (InfoForFileImporter.radioButtonSpace.Checked) FromExcel.Separator = ' ';
+            else if (InfoForFileImporter.radioButtonTab.Checked) FromExcel.Separator = '\t';
+
+            PathNames = FileNames;
+            //CompleteScreening = new cScreening("MTR imported Screening", GlobalInfo);
+            StartingUpDateUI();
+            //PathNames = CurrOpenFileDialog.FileNames;
+
+            if (PathNames == null) return null;
+            // Window form creation
+
+            FromExcel.Text += " - " + PathNames[0];
+            if (IsAppend)
             {
-                LoadMTRAssay(FileNames);
-                ResultLoading = true;
+                FromExcel.numericUpDownColumns.Value = (decimal)cGlobalInfo.CurrentScreening.Columns;
+                FromExcel.numericUpDownColumns.ReadOnly = true;
+                FromExcel.numericUpDownRows.Value = (decimal)cGlobalInfo.CurrentScreening.Rows;
+                FromExcel.numericUpDownRows.ReadOnly = true;
             }
-            if (FileNames[0].Remove(0, FileNames[0].Length - 4) == ".txt")
+            FromExcel.IsImportCSV = true;
+
+            //int Mode = 2;
+            FromExcel.ModeWell = 2;
+
+            if (InfoForFileImporter.radioButtonWellPosModeA02.Checked)
+                FromExcel.ModeWell = 2;
+            else if (InfoForFileImporter.radioButtonWellPosModeA_02.Checked)
+                FromExcel.ModeWell = 1;
+            else if (InfoForFileImporter.radioButtonWellPosModeA_2.Checked)
+                FromExcel.ModeWell = 4; // GE
+            else FromExcel.ModeWell = 3; //(InfoForFileImporter.radioButtonWellPosMode1_2.Checked)
+
+            //if (cGlobalInfo.OptionsWindow.radioButtonWellPosModeSingle.Checked) Mode = 1;
+            CsvFileReader CSVsr = new CsvFileReader(PathNames[0]);
+            CSVsr.Separator = FromExcel.Separator;
+
+            for (int i = 0; i < InfoForFileImporter.numericUpDownHeaderSize.Value; i++)
             {
-                LoadTXTAssay(FileNames);
-                ResultLoading = true;
+                CsvRow TNames = new CsvRow();
+                CSVsr.ReadRow(TNames);
             }
-            //if ((CurrOpenFileDialog.FileNames[0].Remove(0, CurrOpenFileDialog.FileNames[0].Length - 4) == ".csv") || (CurrOpenFileDialog.FileNames[0].Remove(0, CurrOpenFileDialog.FileNames[0].Length - 4) == ".CSV"))
+
+            CsvRow Names = new CsvRow();
+            if (!CSVsr.ReadRow(Names))
+            {
+                CSVsr.Close();
+                return null;
+            }
+
+            int NumPreview = (int)InfoForFileImporter.numericUpDownPreviewSize.Value;
+            List<CsvRow> LCSVRow = new List<CsvRow>();
+            for (int Idx = 0; Idx < NumPreview; Idx++)
+            {
+                CsvRow TNames = new CsvRow();
+                // if (TNames.Count == 0) break;
+                if (!CSVsr.ReadRow(TNames))
+                {
+                    CSVsr.Close();
+                    NumPreview = Idx;
+                    break;
+                    //return null;
+                }
+                LCSVRow.Add(TNames);
+            }
+
+            FromExcel.dataGridViewForImport.AlternatingRowsDefaultCellStyle.BackColor = Color.Beige;
+
+            DataGridViewColumn ColName = new DataGridViewColumn();
+            FromExcel.dataGridViewForImport.Columns.Add("Data Name", "Data Name");
+
+            DataGridViewCheckBoxColumn columnSelection = new DataGridViewCheckBoxColumn();
+            columnSelection.Name = "Selection";
+            FromExcel.dataGridViewForImport.Columns.Add(columnSelection);
+
+            DataGridViewComboBoxColumn columnType = new DataGridViewComboBoxColumn();
+            if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
+            {
+                columnType.DataSource = new string[] { "Plate name", "Column", "Row", "Class", "Name", "Locus ID", "Concentration", "Info", "Descriptor" };
+            }
             else
             {
-                FormForImportExcel CSVFeedBackWindow = LoadCSVAssay(FileNames, false);
-                if (CSVFeedBackWindow == null) return;
-                if (CSVFeedBackWindow.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-                ProcessOK(CSVFeedBackWindow);
+                // update drop down item list with internally defined properties
+                columnType.DataSource = new string[cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count + 2];
+
+                string[] ListNames = (string[])(columnType.DataSource);
+                ListNames[0] = "Well Position";
+
+                for (int i = 0; i < cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count; i++)
+                    ListNames[i + 1] = cGlobalInfo.CurrentScreening.ListWellPropertyTypes[i].Name;
+
+                ListNames[cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count + 1] = "Descriptor";
+            }
+            columnType.Name = "Type";
+            FromExcel.dataGridViewForImport.Columns.Add(columnType);
+
+            for (int i = 0; i < LCSVRow.Count; i++)
+            {
+                DataGridViewColumn NewCol = new DataGridViewColumn();
+                NewCol.ReadOnly = true;
+                FromExcel.dataGridViewForImport.Columns.Add("Readout " + i, "Readout " + i);
             }
 
-            UpdateUIAfterLoading();
+            if (LCSVRow[0].Count > Names.Count)
+            {
+                CSVsr.Close();
+                MessageBox.Show("Inconsistent column number. Check your CSV file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            #region automated field detec // int IdxPlateName = 0;
+            FromExcel.ListPosPropertyOnGUI["Plate Name"] = 0;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("plate"))
+                {
+                    FromExcel.ListPosPropertyOnGUI["Plate Name"] = i;
+                    break;
+                }
+
+            FromExcel.ListPosPropertyOnGUI["Well Position"] = 1;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("well"))
+                {
+                    FromExcel.ListPosPropertyOnGUI["Well Position"] = i;
+                    break;
+                }
+
+            int IdxLocus = -1;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("locus"))
+                {
+                    IdxLocus = i;
+                    break;
+                }
+
+            int IdxCompound = -1;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("compound"))
+                {
+                    IdxCompound = i;
+                    break;
+                }
+
+            int IdxConfidence = -1;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("confidence"))
+                {
+                    IdxConfidence = i;
+                    break;
+                }
+
+
+            int IdxCellLine = -1;
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("cell"))
+                {
+                    IdxCellLine = i;
+                    break;
+                }
+
+
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("class"))
+                {
+                    FromExcel.ListPosPropertyOnGUI["Well Class"] = i;
+                    break;
+                }
+
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("group"))
+                {
+                    FromExcel.ListPosPropertyOnGUI["Group"] = i;
+                    break;
+                }
+
+            for (int i = 0; i < Names.Count; i++)
+                if (Names[i].ToLower().Contains("concentration"))
+                {
+                    FromExcel.ListPosPropertyOnGUI["Concentration"] = i;
+                    break;
+                }
+            #endregion
+            //int IdxRow = 2;
+            //if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
+            //    IdxRow = 3;
+
+            for (int i = 0; i < Names.Count; i++)
+            {
+                FromExcel.dataGridViewForImport.Rows.Add();
+                FromExcel.dataGridViewForImport.Rows[i].Cells[2].Value = "Descriptor";
+                FromExcel.dataGridViewForImport.Rows[i].Cells[0].Value = Names[i];
+                FromExcel.dataGridViewForImport.Rows[i].Cells[1].Value = false;
+            }
+
+            #region check the boxes by default if necessary
+            // FromExcel.dataGridViewForImport.Rows[IdxPlateName].Cells[2].Value = "Plate Name";
+            //  FromExcel.dataGridViewForImport.Rows[IdxPlateName].Cells[1].Value = true;
+            FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Plate Name"]].Cells[2].Value = "Plate Name";
+            FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Plate Name"]].Cells[1].Value = true;
+
+            foreach (var item in cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+            {
+                if (item.Name == "Plate Name") continue;
+                if (FromExcel.ListPosPropertyOnGUI[item.Name] != -1)
+                {
+                    FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI[item.Name]].Cells[2].Value = item.Name;
+                    FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI[item.Name]].Cells[1].Value = true;
+                }
+
+            }
+
+            if (FromExcel.ModeWell == 2)
+            {
+                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Position"]].Cells[2].Value = "Well Position";
+                FromExcel.dataGridViewForImport.Rows[FromExcel.ListPosPropertyOnGUI["Well Position"]].Cells[1].Value = true;
+            }
+            //   //}
+            //   //else if (i == 2)
+            ////   {
+            //       if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
+            //       {
+            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Column";
+            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Row";
+            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = true;
+            //       }
+            //       else
+            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
+            //  // }
+            //   else
+            //{
+            //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = false;
+            //    FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
+            //}
+            #endregion
+
+            for (int i = 0; i < Names.Count; i++)
+                for (int j = 0; j < LCSVRow.Count; j++)
+                    FromExcel.dataGridViewForImport.Rows[i].Cells[3 + j].Value = LCSVRow[j][i].ToString();
+
+            FromExcel.dataGridViewForImport.Update();
+
+            FromExcel.CurrentScreen = cGlobalInfo.CurrentScreening;
+            FromExcel.thisHCSAnalyzer = this;
+            FromExcel.IsAppend = IsAppend;
+            FromExcel.HeaderSize = (int)InfoForFileImporter.numericUpDownHeaderSize.Value;
+
+            return FromExcel;
         }
-
-
-
-
 
         private void ProcessOK(FormForImportExcel CSVFeedBackWindow)
         {
@@ -304,34 +529,66 @@ namespace HCSAnalyzer
             int NumName = 0;
             int NumInfo = 0;
             int NumClass = 0;
+            int NumCellLine = 0;
+            int NumClassificationConf = 0;
+            int NumGroup = 0;
 
             int numDescritpor = 0;
 
+            #region Check number of time each property has been selected
             for (int i = 0; i < CSVFeedBackWindow.dataGridViewForImport.Rows.Count; i++)
             {
-                string CurrentVal = CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[2].Value.ToString();
-                if ((CurrentVal == "Plate name") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumPlateName++;
-                if ((CurrentVal == "Row") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumRow++;
-                if ((CurrentVal == "Column") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumCol++;
-                if ((CurrentVal == "Well position") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumWellPos++;
-                if ((CurrentVal == "Locus ID") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumLocusID++;
-                if ((CurrentVal == "Concentration") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumConcentration++;
-                if ((CurrentVal == "Name") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumName++;
-                if ((CurrentVal == "Info") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumInfo++;
-                if ((CurrentVal == "Class") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    NumClass++;
-                if ((CurrentVal == "Descriptor") && ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value))
-                    numDescritpor++;
-            }
+                if ((bool)CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[1].Value)
+                {
+                    string CurrentVal = CSVFeedBackWindow.dataGridViewForImport.Rows[i].Cells[2].Value.ToString();
 
+                    // TODO: check it the property is critical here
+                    switch (CurrentVal)
+                    {
+                        case "Plate Name":
+                            NumPlateName++;
+                            break;
+                        case "Row":
+                            NumRow++;
+                            break;
+                        case "Column":
+                            NumCol++;
+                            break;
+                        case "Well Position":
+                            NumWellPos++;
+                            break;
+                        case "Locus ID":
+                            NumLocusID++;
+                            break;
+                        case "Concentration":
+                            NumConcentration++;
+                            break;
+                        case "Compound Name":
+                            NumName++;
+                            break;
+                        case "Well Class":
+                            NumClass++;
+                            break;
+                        case "Classification Confidence":
+                            NumClassificationConf++;
+                            break;
+                        case "Group":
+                            NumGroup++;
+                            break;
+                        case "Cell Line":
+                            NumCellLine++;
+                            break;
+                        case "Descriptor":
+                            numDescritpor++;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            #endregion
+
+            #region error message handler for wrongly selected properties
             if (NumPlateName != 1)
             {
                 FormOptionsForPlateName FormForPlateName = new FormOptionsForPlateName();
@@ -386,17 +643,46 @@ namespace HCSAnalyzer
                 MessageBox.Show("You need to select at least one \"Descriptor\" !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            #endregion
 
             if (CSVFeedBackWindow.IsImportCSV)
                 LoadingProcedureForCSVImport(CSVFeedBackWindow);
             else
                 LoadingProcedure(CSVFeedBackWindow);
-
-            //this.Dispose();       
-
-
-
         }
+
+        private void ImportFiles(string[] FileNames)
+        {
+            if (IsFileUsed(FileNames[0]))
+            {
+                MessageBox.Show("File currently used by another application.\n", "Loading error !", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            bool ResultLoading = false;
+
+            if (FileNames[0].Remove(0, FileNames[0].Length - 4) == ".mtr")
+            {
+                LoadMTRAssay(FileNames);
+                ResultLoading = true;
+            }
+            if (FileNames[0].Remove(0, FileNames[0].Length - 4) == ".txt")
+            {
+                LoadTXTAssay(FileNames);
+                ResultLoading = true;
+            }
+            //if ((CurrOpenFileDialog.FileNames[0].Remove(0, CurrOpenFileDialog.FileNames[0].Length - 4) == ".csv") || (CurrOpenFileDialog.FileNames[0].Remove(0, CurrOpenFileDialog.FileNames[0].Length - 4) == ".CSV"))
+            else
+            {
+                FormForImportExcel CSVFeedBackWindow = LoadCSVAssay(FileNames, false);
+                if (CSVFeedBackWindow == null) return;
+                if (CSVFeedBackWindow.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+                ProcessOK(CSVFeedBackWindow);
+            }
+
+            UpdateUIAfterLoading();
+        }
+
         #endregion
 
         #region CSV functions
@@ -539,319 +825,6 @@ namespace HCSAnalyzer
             return ToReturn;
         }
 
-        private FormForImportExcel LoadCSVAssay(string[] FileNames, bool IsAppend)
-        {
-            if (cGlobalInfo.CurrentScreening == null) IsAppend = false;
-
-            FormInfoForFileImporter InfoForFileImporter = new FormInfoForFileImporter(FileNames[0]);
-            if (InfoForFileImporter.ShowDialog() != System.Windows.Forms.DialogResult.OK) return null;
-
-            FormForImportExcel FromExcel = new FormForImportExcel();
-
-            //    char Separator = ',';
-            if (InfoForFileImporter.radioButtonSemiColon.Checked) FromExcel.Separator = ';';
-            else if (InfoForFileImporter.radioButtonSpace.Checked) FromExcel.Separator = ' ';
-            else if (InfoForFileImporter.radioButtonTab.Checked) FromExcel.Separator = '\t';
-
-            PathNames = FileNames;
-            if (IsAppend == false)
-            {
-                if (cGlobalInfo.CurrentScreening != null) cGlobalInfo.CurrentScreening.Close3DView();
-                cGlobalInfo.CurrentScreening = new cScreening("CSV imported Screening");
-
-            }
-            //CompleteScreening = new cScreening("MTR imported Screening", GlobalInfo);
-            StartingUpDateUI();
-            //PathNames = CurrOpenFileDialog.FileNames;
-
-            if (PathNames == null) return null;
-            // Window form creation
-
-            FromExcel.Text += " - " + PathNames[0];
-            if (IsAppend)
-            {
-                FromExcel.numericUpDownColumns.Value = (decimal)cGlobalInfo.CurrentScreening.Columns;
-                FromExcel.numericUpDownColumns.ReadOnly = true;
-                FromExcel.numericUpDownRows.Value = (decimal)cGlobalInfo.CurrentScreening.Rows;
-                FromExcel.numericUpDownRows.ReadOnly = true;
-            }
-
-            FromExcel.IsImportCSV = true;
-
-
-            //int Mode = 2;
-            FromExcel.ModeWell = 2;
-
-
-            if (InfoForFileImporter.radioButtonWellPosModeA02.Checked)
-                FromExcel.ModeWell = 2;
-            else if (InfoForFileImporter.radioButtonWellPosModeA_02.Checked)
-                FromExcel.ModeWell = 1;
-            else if (InfoForFileImporter.radioButtonWellPosModeA_2.Checked)
-                FromExcel.ModeWell = 4; // GE
-            else FromExcel.ModeWell = 3; //(InfoForFileImporter.radioButtonWellPosMode1_2.Checked)
-
-            //if (cGlobalInfo.OptionsWindow.radioButtonWellPosModeSingle.Checked) Mode = 1;
-            CsvFileReader CSVsr = new CsvFileReader(PathNames[0]);
-            CSVsr.Separator = FromExcel.Separator;
-
-            for (int i = 0; i < InfoForFileImporter.numericUpDownHeaderSize.Value; i++)
-            {
-                CsvRow TNames = new CsvRow();
-                CSVsr.ReadRow(TNames);
-            }
-
-            CsvRow Names = new CsvRow();
-            if (!CSVsr.ReadRow(Names))
-            {
-                CSVsr.Close();
-                return null;
-            }
-
-            int NumPreview = (int)InfoForFileImporter.numericUpDownPreviewSize.Value;
-            List<CsvRow> LCSVRow = new List<CsvRow>();
-            for (int Idx = 0; Idx < NumPreview; Idx++)
-            {
-                CsvRow TNames = new CsvRow();
-                // if (TNames.Count == 0) break;
-                if (!CSVsr.ReadRow(TNames))
-                {
-                    CSVsr.Close();
-                    NumPreview = Idx;
-                    break;
-                    //return null;
-                }
-                LCSVRow.Add(TNames);
-            }
-
-            // FromExcel.dataGridViewForImport.RowsDefaultCellStyle.BackColor = Color.Bisque;
-            FromExcel.dataGridViewForImport.AlternatingRowsDefaultCellStyle.BackColor = Color.Beige;
-
-            DataGridViewColumn ColName = new DataGridViewColumn();
-            FromExcel.dataGridViewForImport.Columns.Add("Data Name", "Data Name");
-
-            DataGridViewCheckBoxColumn columnSelection = new DataGridViewCheckBoxColumn();
-            columnSelection.Name = "Selection";
-            FromExcel.dataGridViewForImport.Columns.Add(columnSelection);
-
-            DataGridViewComboBoxColumn columnType = new DataGridViewComboBoxColumn();
-            if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
-            {
-
-                columnType.DataSource = new string[] { "Plate name", "Column", "Row", "Class", "Name", "Locus ID", "Concentration", "Info", "Descriptor" };
-            }
-            else
-            {
-                //columnType.DataSource = new string[] { "Plate name", "Well position", "Class", "Name", "Locus ID", "Concentration", "Info", "Descriptor" };
-                columnType.DataSource = new string[cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count+2];
-
-                string[] ListNames = (string[])(columnType.DataSource);
-                ListNames[0] = "Well Position";
-
-                for (int i = 0; i < cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count; i++)
-                {
-                   ListNames[i+1] = cGlobalInfo.CurrentScreening.ListWellPropertyTypes[i].Name;
-                }
-                ListNames[cGlobalInfo.CurrentScreening.ListWellPropertyTypes.Count + 1] = "Descriptor";
-
-            }
-            columnType.Name = "Type";
-            FromExcel.dataGridViewForImport.Columns.Add(columnType);
-
-            for (int i = 0; i < LCSVRow.Count; i++)
-            {
-                DataGridViewColumn NewCol = new DataGridViewColumn();
-                NewCol.ReadOnly = true;
-                FromExcel.dataGridViewForImport.Columns.Add("Readout " + i, "Readout " + i);
-            }
-
-
-
-            if (LCSVRow[0].Count > Names.Count)
-            {
-                CSVsr.Close();
-                MessageBox.Show("Inconsistent column number. Check your CSV file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-
-            }
-
-            int IdxPlateName = 0;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("plate"))
-                {
-                    IdxPlateName = i;
-                    break;
-                }
-            int IdxWellName = 1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("well"))
-                {
-                    IdxWellName = i;
-                    break;
-                }
-            int IdxLocus = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("locus"))
-                {
-                    IdxLocus = i;
-                    break;
-                }
-
-            int IdxConcentration = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("concentration"))
-                {
-                    IdxConcentration = i;
-                    break;
-                }
-
-            int IdxCompound = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("compound"))
-                {
-                    IdxCompound = i;
-                    break;
-                }
-
-            int IdxConfidence = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("confidence"))
-                {
-                    IdxConfidence = i;
-                    break;
-                }
-
-
-            int IdxCellLine = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("cell"))
-                {
-                    IdxCellLine = i;
-                    break;
-                }
-
-            int IdxClass = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("class"))
-                {
-                    IdxClass = i;
-                    break;
-                }
-
-            int IdxGroup = -1;
-            for (int i = 0; i < Names.Count; i++)
-                if (Names[i].ToLower().Contains("group"))
-                {
-                    IdxGroup = i;
-                    break;
-                }
-
-            //int IdxRow = 2;
-            //if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
-            //    IdxRow = 3;
-
-            for (int i = 0; i < Names.Count; i++)
-            {
-                FromExcel.dataGridViewForImport.Rows.Add();
-                FromExcel.dataGridViewForImport.Rows[i].Cells[0].Value = Names[i];
-                FromExcel.dataGridViewForImport.Rows[i].Cells[2].Value = "Descriptor";
-            }
-
-
-            // default checked boxes
-            FromExcel.dataGridViewForImport.Rows[IdxPlateName].Cells[2].Value = "Plate Name";
-            FromExcel.dataGridViewForImport.Rows[IdxPlateName].Cells[1].Value = true;
-
-            if (IdxConcentration != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxConcentration].Cells[2].Value = "Concentration";
-                FromExcel.dataGridViewForImport.Rows[IdxConcentration].Cells[1].Value = true;
-            }
-
-            if (IdxLocus != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxLocus].Cells[2].Value = "Locus ID";
-                FromExcel.dataGridViewForImport.Rows[IdxLocus].Cells[1].Value = true;
-            }
-
-            if (IdxCellLine != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxCellLine].Cells[2].Value = "Cell Line";
-                FromExcel.dataGridViewForImport.Rows[IdxCellLine].Cells[1].Value = true;
-            }
-
-            if (IdxConfidence != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxConfidence].Cells[2].Value = "Classification Confidence";
-                FromExcel.dataGridViewForImport.Rows[IdxConfidence].Cells[1].Value = true;
-            }
-
-            if (IdxCompound != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxCompound].Cells[2].Value = "Compound Name";
-                FromExcel.dataGridViewForImport.Rows[IdxCompound].Cells[1].Value = true;
-            }
-
-            if (IdxClass != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxClass].Cells[2].Value = "Well Class";
-                FromExcel.dataGridViewForImport.Rows[IdxClass].Cells[1].Value = true;
-            }
-
-            if (IdxGroup != 1)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxGroup].Cells[2].Value = "Group";
-                FromExcel.dataGridViewForImport.Rows[IdxGroup].Cells[1].Value = true;
-            }
-
-            if (FromExcel.ModeWell == 2)
-            {
-                FromExcel.dataGridViewForImport.Rows[IdxWellName].Cells[2].Value = "Well Position";
-                FromExcel.dataGridViewForImport.Rows[IdxWellName].Cells[1].Value = true;
-            }
-            //   //}
-            //   //else if (i == 2)
-            ////   {
-            //       if ((FromExcel.ModeWell == 1) || (FromExcel.ModeWell == 3))
-            //       {
-            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Column";
-            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Row";
-            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = true;
-            //       }
-            //       else
-            //           FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
-            //  // }
-            //   else
-            //   {
-            //       FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = false;
-            //       FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow++].Value = "Descriptor";
-            //   }
-
-
-            for (int i = 0; i < Names.Count; i++)
-            {
-                for (int j = 0; j < LCSVRow.Count; j++)
-                {
-                    //  if (i < LCSVRow[j].Count)
-                    FromExcel.dataGridViewForImport.Rows[i].Cells[3+j].Value = LCSVRow[j][i].ToString();
-                    //  else
-                    //      FromExcel.dataGridViewForImport.Rows[i].Cells[IdxRow + j].Value = "";
-                }
-            }
-
-            FromExcel.dataGridViewForImport.Update();
-            //   FromExcel.dataGridViewForImport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewForImport_MouseClick);
-
-            FromExcel.CurrentScreen = cGlobalInfo.CurrentScreening;
-            FromExcel.thisHCSAnalyzer = this;
-            FromExcel.IsAppend = IsAppend;
-            FromExcel.HeaderSize = (int)InfoForFileImporter.numericUpDownHeaderSize.Value;
-
-
-            return FromExcel;
-
-        }
-
         public void LoadingProcedureForCSVImport(FormForImportExcel FromExcel)
         {
             CsvFileReader CSVsr = new CsvFileReader(PathNames[0]);
@@ -872,18 +845,24 @@ namespace HCSAnalyzer
 
             int ColSelectedForName = GetColIdxFor("Name", FromExcel);
             int ColLocusID = GetColIdxFor("Locus ID", FromExcel);
-            int ColConcentration = GetColIdxFor("Concentration", FromExcel);
-            int ColInfo = GetColIdxFor("Info", FromExcel);
-            int ColClass = GetColIdxFor("Class", FromExcel);
-            int ColPlateName = GetColIdxFor("Plate name", FromExcel);
-            int ColCol = GetColIdxFor("Column", FromExcel);
-            int ColRow = GetColIdxFor("Row", FromExcel);
-            int ColWellPos = GetColIdxFor("Well position", FromExcel);
+            int ColConcentration = FromExcel.ListPosPropertyOnGUI["Concentration"];
+            int ColClassifConf = GetColIdxFor("Classification Confidence", FromExcel);
+            int ColCellLine = GetColIdxFor("Cell Line", FromExcel);
+            int ColCompoundName = GetColIdxFor("Compound Name", FromExcel);
+
+            int ColClass = FromExcel.ListPosPropertyOnGUI["Well Class"];
+
+            int ColWellPos = FromExcel.ListPosPropertyOnGUI["Well Position"];
+            int ColPlateName = FromExcel.ListPosPropertyOnGUI["Plate Name"];
+            int ColGroup = FromExcel.ListPosPropertyOnGUI["Group"];
+
             int[] ColsForDescriptors = GetColsIdxFor("Descriptor", FromExcel);
 
+            int ColCol = GetColIdxFor("Column", FromExcel);
+            int ColRow = GetColIdxFor("Row", FromExcel);
             int WellLoaded = 0;
             int FailToLoad = 0;
-
+            int PlateLoaded = 0;
             if (!FromExcel.IsAppend)
             {
                 cGlobalInfo.CurrentScreening.Columns = (int)FromExcel.numericUpDownColumns.Value;
@@ -891,7 +870,6 @@ namespace HCSAnalyzer
                 cGlobalInfo.CurrentScreening.ListDescriptors.Clean();
             }
             int ShiftIdx = cGlobalInfo.CurrentScreening.ListDescriptors.Count;
-
 
             for (int IdxFile = 0; IdxFile < PathNames.Length; IdxFile++)
             {
@@ -923,7 +901,6 @@ namespace HCSAnalyzer
                 }
                 for (int IdxName = 0; IdxName < Names.Count; IdxName++)
                 {
-
                     if (Names[IdxName] != OriginalNames[IdxName])
                     {
                         CSVsr.Close();
@@ -961,10 +938,7 @@ namespace HCSAnalyzer
                             PlateName = SplittedStrings[SplittedStrings.Length - 2];
                         }
                         else
-                        {
                             PlateName = CurrentFileName;
-                        }
-
                     }
                     else
                         PlateName = CurrentDesc[ColPlateName];
@@ -976,6 +950,7 @@ namespace HCSAnalyzer
                     {
                         CurrentPlate = new cPlate(PlateName, cGlobalInfo.CurrentScreening);
                         cGlobalInfo.CurrentScreening.AddPlate(CurrentPlate);
+                        PlateLoaded++;
                     }
 
                     int[] Pos = new int[2];
@@ -1039,14 +1014,6 @@ namespace HCSAnalyzer
 
                         if (double.TryParse(CurrentDesc[ColsForDescriptors[idxDesc]], NumberStyles.Any, CultureInfo.InvariantCulture/*.CreateSpecificCulture("en-US")*/, out Value))
                         {
-                            //if(double.IsNaN(Value))
-                            // {
-                            //     else
-                            //{
-                            //    FailToLoad++;
-                            //    goto NEXTLOOP;   
-                            //}
-                            // }
                             CurrentDescriptor = new cSignature(Value, cGlobalInfo.CurrentScreening.ListDescriptors[idxDesc/* + ShiftIdx*/], cGlobalInfo.CurrentScreening);
                             LDesc.Add(CurrentDescriptor);
                         }
@@ -1059,7 +1026,6 @@ namespace HCSAnalyzer
                                 LDesc.Add(CurrentDescriptor);
 
                                 ConvertedNaNValue++;
-
                             }
                             else
                             {
@@ -1079,50 +1045,102 @@ namespace HCSAnalyzer
                             goto NEXTLOOP;
                     }
 
-
                     cWell CurrentWell = new cWell(LDesc, Pos[0], Pos[1], cGlobalInfo.CurrentScreening, CurrentPlate);
-
 
                     CurrentPlate.AddWell(CurrentWell);
                     WellLoaded++;
 
-                    if ((ColSelectedForName != -1) && (ColSelectedForName < CurrentDesc.Count))
+                    #region let's take care of the properties
+
+                    #region Cell Line
+                    string NameProp = "Cell Line";
+                    int ColTmp = ColCellLine;
+                    if (ColTmp != -1)
                     {
-                        CurrentWell.ListProperties.UpdateValueByName("Compound Name", CurrentDesc[ColSelectedForName]);
+                        switch (CurrentWell.ListProperties.FindByName(NameProp).PropertyType.Type)
+                        {
+                            case eDataType.DOUBLE:
+                                double CurrentValueD;
+                                if (double.TryParse(CurrentDesc[ColTmp], out CurrentValueD))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, (double)CurrentValueD);
+                                break;
+                            case eDataType.BOOL:
+                                break;
+                            case eDataType.STRING:
+                                if ((CurrentDesc[ColTmp].ToString() != "") && (CurrentDesc[ColTmp].ToString().ToLower() != "n.a."))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, CurrentDesc[ColTmp]);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                break;
+                            case eDataType.INTEGER:
+                                int CurrentValue;
+                                if (!int.TryParse(CurrentDesc[ColTmp], out CurrentValue))
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, null);
+                                else
+                                    CurrentWell.ListProperties.UpdateValueByName(NameProp, (int)CurrentValue);
+                                break;
+                            case eDataType.TIME:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    #endregion
+                    if (ColCompoundName != -1)
+                    {
+                        if ((CurrentDesc[ColCompoundName].ToString() != "") && (CurrentDesc[ColCompoundName].ToString().ToLower() != "n.a."))
+                            CurrentWell.ListProperties.UpdateValueByName("Compound Name", CurrentDesc[ColCompoundName]);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Compound Name", null);
+                    }
+                    if (ColGroup != -1)
+                    {
+                        int CurrentValue;
+                        if (!int.TryParse(CurrentDesc[ColGroup], out CurrentValue))
+                            CurrentWell.ListProperties.UpdateValueByName("Group", null);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Group", (int)CurrentValue);
                     }
 
                     if (ColLocusID != -1)
                     {
-                        double CurrentValue;
-
-                        if (!double.TryParse(CurrentDesc[ColLocusID], out CurrentValue))
-                            goto NEXTSTEP;
-
-                        CurrentWell.ListProperties.UpdateValueByName("Locus ID", (int)CurrentValue);
-
+                        if ((CurrentDesc[ColLocusID].ToString() != "") && (CurrentDesc[ColLocusID].ToString().ToLower() != "n.a."))
+                            CurrentWell.ListProperties.UpdateValueByName("Locus ID", CurrentDesc[ColLocusID].ToString());
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Locus ID", null);
                     }
+
                     if (ColConcentration != -1)
                     {
                         double CurrentValue;
 
                         if (!double.TryParse(CurrentDesc[ColConcentration], out CurrentValue))
-                            goto NEXTSTEP;
-                        CurrentWell.ListProperties.UpdateValueByName("Concentration", CurrentValue);
-                        //CurrentWell.Concentration = CurrentValue;
+                            CurrentWell.ListProperties.UpdateValueByName("Concentration", null);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Concentration", CurrentValue);
                     }
-                NEXTSTEP:;
-
-                    if ((ColInfo != -1) && (ColInfo < CurrentDesc.Count))
-                        CurrentWell.Info = CurrentDesc[ColInfo];
 
                     if (ColClass != -1)
                     {
                         int CurrentValue;
                         if (!int.TryParse(CurrentDesc[ColClass], out CurrentValue))
-                            goto NEXTLOOP;
-                        CurrentWell.SetClass(CurrentValue);
+                            CurrentWell.ListProperties.UpdateValueByName("Well Class", 0);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Well Class", CurrentValue);
                     }
+                
 
+                    if (ColClassifConf != -1)
+                    {
+                        double CurrentValue;
+                        if (!double.TryParse(CurrentDesc[ColClassifConf], out CurrentValue))
+                            CurrentWell.ListProperties.UpdateValueByName("Classification Confidence", null);
+                        else
+                            CurrentWell.ListProperties.UpdateValueByName("Classification Confidence", CurrentValue);
+                    }
+                #endregion
                 NEXTLOOP:;
 
                 }
@@ -1133,7 +1151,7 @@ namespace HCSAnalyzer
 
             FromExcel.Dispose();
 
-            MessageBox.Show("CSV file loaded:\n" + WellLoaded + " well(s) loaded\n" + FailToLoad + " well(s) rejected.", "Process finished !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("CSV file loaded:\n" + PlateLoaded + " plate(s) loaded\n" + WellLoaded + " well(s) loaded\n" + FailToLoad + " well(s) rejected.", "Process finished !", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             this.toolStripcomboBoxPlateList.Items.Clear();
             for (int IdxPlate = 0; IdxPlate < cGlobalInfo.CurrentScreening.GetNumberOfOriginalPlates(); IdxPlate++)
@@ -1627,8 +1645,6 @@ namespace HCSAnalyzer
             if (DisplayDescriptorsToSave(CurrentPathforCSV) == false) return;
 
             MessageBox.Show("CSV file saved !");
-
-
         }
 
         private bool DisplayDescriptorsToSave(string CurrentPathforCSV)
@@ -1654,8 +1670,6 @@ namespace HCSAnalyzer
             style.Font = new Font(FormToSave.dataGridView.Font, FontStyle.Bold);
 
             FormToSave.dataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.Beige;
-
-
 
             int RowIdx = 0;
             FormToSave.dataGridView.Rows.Add();
@@ -1760,18 +1774,22 @@ namespace HCSAnalyzer
         {
             using (StreamWriter myFile = new StreamWriter(PathName, false, Encoding.Default))
             {
+                #region write down the header first
                 string sHeaders = "";
+                List<string> LStrings = new List<string>();
                 for (int Row = 0; Row < GridView.RowCount; Row++)
                 {
                     if ((bool)GridView.Rows[Row].Cells[1].Value == true)
                     {
                         sHeaders += (string)GridView.Rows[Row].Cells[0].Value + ",";
-
+                        LStrings.Add((string)GridView.Rows[Row].Cells[0].Value);
                     }
                 }
                 sHeaders = sHeaders.Remove(sHeaders.Length - 1, 1);
                 myFile.WriteLine(sHeaders);
+                #endregion
 
+                string sToBeWritten = "";
                 int NumDescriptor = cGlobalInfo.CurrentScreening.ListDescriptors.Count;
                 int RowPos = 0;
 
@@ -1782,52 +1800,52 @@ namespace HCSAnalyzer
                     for (int IdxValue = 0; IdxValue < cGlobalInfo.CurrentScreening.Columns; IdxValue++)
                         for (int IdxValue0 = 0; IdxValue0 < cGlobalInfo.CurrentScreening.Rows; IdxValue0++)
                         {
-                            sHeaders = "";
+                            sToBeWritten = "";
                             cWell TmpWell = CurrentPlateToProcess.GetWell(IdxValue, IdxValue0, true);
                             if (TmpWell == null) continue;
 
-
-                            int ColPos = 0;
                             int RealPos = 0;
 
-                            if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                                sHeaders += CurrentPlateToProcess.GetName() + ",";
-
-                            // //if (cGlobalInfo.OptionsWindow.radioButtonWellPosModeSingle.Checked)
-                            // //{
-                            if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                                //   GridToSave.Rows[RowPos].Cells[ColPos++].Value = ConvertPosition(TmpWell.GetPosX(), TmpWell.GetPosY());
-                                sHeaders += ConvertPosition(TmpWell.GetPosX(), TmpWell.GetPosY()) + ",";
-
-                            ////}
-                            ////else
-                            ////{
-                            ////    if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                            ////    {
-                            ////        GridToSave.Rows[RowPos].Cells[ColPos++].Value = TmpWell.GetPosX();
-                            ////    }
-                            ////    if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
-                            ////    {
-                            ////        GridToSave.Rows[RowPos].Cells[ColPos++].Value = TmpWell.GetPosY();
-                            ////    }
-                            ////}
-                            foreach (var item in cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+                            // first, extract the properties
+                            for (int i = 0; i < LStrings.Count; i++)
                             {
-                                if (item.Name == "Plate Name") continue;
-
-                                if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
+                                string TmpName = LStrings[i];
+                                RealPos = 0;
+                                // }
+                                // foreach (string item in sHeaders)// cGlobalInfo.CurrentScreening.ListWellPropertyTypes)
+                                // {
+                                if (TmpName == "Well Position")
                                 {
-                                    object TmpObj = TmpWell.ListProperties.FindValueByName(item.Name);
-
-                                    if (TmpObj != null)
-                                        sHeaders += TmpObj.ToString() + ",";
+                                    sToBeWritten += TmpWell.GetPos() + ",";
+                                    RealPos++;
+                                }
+                                else if ((bool)GridView.Rows[RealPos++].Cells[1].Value)
+                                {
+                                   // RealPos++;
+                                    cProperty TmpP = TmpWell.ListProperties.FindPropertyByName(TmpName);
+                                    if (TmpP != null)
+                                    {
+                                        /// object TmpObj = TmpWell.ListProperties.FindValueByName(TmpName);
+                                        object TmpObj = TmpP.GetValue();
+                                        if (TmpObj != null)
+                                            sToBeWritten += TmpObj.ToString() + ",";
+                                        else
+                                            sToBeWritten += "n.a.,";
+                                    }
                                     else
-                                        sHeaders += "n.a.,";
+                                    {
+                                        // it's a descriptor then ....
+                                        cDescriptorType DT = cGlobalInfo.CurrentScreening.ListDescriptors.GetDescriptorByName(TmpName);
+                                        if (DT == null) // shouldn't happen
+                                            sToBeWritten += "n.a.,";
+                                        else
+                                            sToBeWritten += TmpWell.GetAverageValue(DT).ToString() + ",";
+                                    }
 
                                 }
                             }
-                            sHeaders = sHeaders.Remove(sHeaders.Length - 1, 1);
-                            myFile.WriteLine(sHeaders);
+                            sToBeWritten = sToBeWritten.Remove(sToBeWritten.Length - 1, 1);
+                            myFile.WriteLine(sToBeWritten);
 
                             RowPos++;
                         }

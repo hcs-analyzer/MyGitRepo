@@ -26,9 +26,9 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
             //this.CurrentScreening = CurrentScreen;
             InitializeComponent();
 
-            this.textBoxImageRoot.Text = cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text;
+           // string PathName = cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text;
 
-            this.textBoxPlateForm.Text = cGlobalInfo.ImageAccessor.ImagingPlatformType.ToString();
+            this.textBoxPlateForm.Text = cGlobalInfo.ImageAccessor.GetImagingPlatFormType().ToString();
             this.numericUpDownChannelNumber.Value = cGlobalInfo.ImageAccessor.NumberOfChannels;
             this.numericUpDownFieldNumber.Value = cGlobalInfo.OptionsWindow.numericUpDownImageAccessNumberOfFields.Value;
         }
@@ -38,15 +38,15 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
         private void buttonInspect_Click(object sender, EventArgs e)
         {
             this.treeViewForScreenInspection.Nodes.Clear();
-            string[] PlateDirectories = Directory.GetDirectories(this.textBoxImageRoot.Text);
+            string[] PlateDirectories = Directory.GetDirectories(cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text);
 
             #region Cellomics
-            if (cGlobalInfo.ImageAccessor.ImagingPlatformType == eImagingPlatformType.CELLOMICS)
+            if (cGlobalInfo.ImageAccessor.GetImagingPlatFormType() == eImagingPlatformType.CELLOMICS)
             {
 
                 for (int i = 0; i < PlateDirectories.Length; i++)
                 {
-                    string TmpPlateName = PlateDirectories[i].Remove(0, this.textBoxImageRoot.Text.Length + 1);
+                    string TmpPlateName = PlateDirectories[i].Remove(0, cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text.Length + 1);
 
                     OleDbConnection MyConnection = new OleDbConnection();
                     try
@@ -137,11 +137,11 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
             #endregion
 
             #region ImageXPress
-            else if (cGlobalInfo.ImageAccessor.ImagingPlatformType == eImagingPlatformType.IMAGEXPRESS)
+            else if (cGlobalInfo.ImageAccessor.GetImagingPlatFormType() == eImagingPlatformType.IMAGEXPRESS)
             {
                 for (int i = 0; i < PlateDirectories.Length; i++)
                 {
-                    string PlateName = PlateDirectories[i].Remove(0, this.textBoxImageRoot.Text.Length + 1);
+                    string PlateName = PlateDirectories[i].Remove(0, cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text.Length + 1);
                     TreeNode TmpNode = new TreeNode("[Plate " + i.ToString() + "] - " + PlateName);
                     TmpNode.Checked = true;
                     TmpNode.Tag = PlateDirectories[i];
@@ -199,11 +199,11 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
             #endregion
 
             #region Incell
-            if (cGlobalInfo.ImageAccessor.ImagingPlatformType == eImagingPlatformType.INCELL)
+            if (cGlobalInfo.ImageAccessor.GetImagingPlatFormType() == eImagingPlatformType.INCELL)
             {
                 for (int i = 0; i < PlateDirectories.Length; i++)
                 {
-                    string PlateName = PlateDirectories[i].Remove(0, this.textBoxImageRoot.Text.Length + 1);
+                    string PlateName = PlateDirectories[i].Remove(0, cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text.Length + 1);
                     TreeNode TmpNode = new TreeNode("[Plate " + i.ToString() + "] - " + PlateName);
                     TmpNode.Checked = true;
                     TmpNode.Tag = PlateDirectories[i];
@@ -317,7 +317,69 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
             }
             #endregion
 
+            #region CV7000
+            else if (cGlobalInfo.ImageAccessor.GetImagingPlatFormType() == eImagingPlatformType.CV7000)
+            {
+                for (int i = 0; i < PlateDirectories.Length; i++)
+                {
+                    string PlateName = PlateDirectories[i].Remove(0, cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text.Length + 1);
+                    TreeNode TmpNode = new TreeNode("[Plate " + i.ToString() + "] - " + PlateName);
+                    TmpNode.Checked = true;
+                    TmpNode.Tag = PlateDirectories[i];
+                    // now parse the images...
+                    string[] FirstListImages = Directory.GetFiles(PlateDirectories[i], "*.tif", SearchOption.AllDirectories);
 
+                    Dictionary<string, int> CurrentPlateDico = new Dictionary<string, int>();
+
+                    List<string> ListTrueFiles = new List<string>();
+
+                    for (int j = 0; j < FirstListImages.Length; j++)
+                    {
+                        string TmpImName = FirstListImages[j];
+                        if (TmpImName.Contains("_thumb")) continue;
+                        if (TmpImName.Contains("BP")) continue;
+                        if (TmpImName.Contains("CMOS")) continue;
+
+                        string[] ForSplit = TmpImName.Split('\\');
+                        string ImageName = ForSplit[ForSplit.Length - 1];
+
+                        ListTrueFiles.Add(ImageName);
+                    }
+
+                    for (int j = 0; j < ListTrueFiles.Count; j++)
+                    {
+                        string TmpName = ListTrueFiles[j];
+                        string[] ForSplit = TmpName.Split('_');
+                        string WellPos = ForSplit[1];
+                        int NumAssociatedImages = 1;
+                        ListTrueFiles.RemoveAt(j--);
+
+                        // now parse the rest of the files to merge the channels
+                        for (int k = j + 1; k < ListTrueFiles.Count; k++)
+                        {
+                            if (ListTrueFiles[k].Contains("_" + WellPos))
+                            {
+
+                                NumAssociatedImages++;
+                                ListTrueFiles.RemoveAt(k);
+                                k--;
+                            }
+                        }
+
+                        TreeNode WellNode = new TreeNode(WellPos + " : " + NumAssociatedImages + " images");
+                        WellNode.Checked = true;
+                        WellNode.Tag = null;
+                        TmpNode.Nodes.Add(WellNode);
+
+                        CurrentPlateDico.Add(WellPos, NumAssociatedImages);
+
+                    }
+
+                    this.treeViewForScreenInspection.Nodes.Add(TmpNode);
+                    MainScreenDico.Add(PlateName, CurrentPlateDico);
+                }
+            }
+            #endregion
 
             this.richTextBoxReport.Clear();
             this.richTextBoxReport.AppendText(this.treeViewForScreenInspection.Nodes.Count + " plates.\n");
@@ -362,7 +424,7 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
 
             //  if (this.CurrentScreening == null)
 
-            string[] ForNames = this.textBoxImageRoot.Text.Split('\\');
+            string[] ForNames = cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text.Split('\\');
             cGlobalInfo.CurrentScreening = new cScreening(ForNames[ForNames.Length - 1]);
             cGlobalInfo.CurrentScreening.Columns = 24;
             cGlobalInfo.CurrentScreening.Rows = 16;
@@ -460,10 +522,10 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
                     WindowProgress.progressBarWell.Refresh();
                     WindowProgress.Refresh();
 
-                    if (IdxWell == 169)
-                    {
+                    //if (IdxWell == 169)
+                    //{
                     
-                    }
+                    //}
                     int NumberOfFieldProcessed = 0;
                     double AverageValue = 0;
 
@@ -476,13 +538,13 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
                         IFW.ListProperties.FindByName("Field").SetNewValue(IdxField);
                         IFW.Run();
 
-                        //cImage TmpImage = IFW.GetOutPut();
+                        cImage TmpImage = IFW.GetOutPut();
 
-                        cImage TmpImage = new cImage(10000, 3000, 1, 1);
-                        for (int i = 0; i < TmpImage.Width*TmpImage.Height; i++)
-                        {
-                            TmpImage.SingleChannelImage[0].Data[i] = i;
-                        }
+                        //cImage TmpImage = new cImage(10000, 3000, 1, 1);
+                        //for (int i = 0; i < TmpImage.Width*TmpImage.Height; i++)
+                        //{
+                        //    TmpImage.SingleChannelImage[0].Data[i] = i;
+                        //}
 
                         if ((TmpImage == null) || (TmpImage.GetNumChannels() == 0))
                         {
@@ -491,7 +553,7 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
                         }
                         else
                         {
-                            AverageValue += TmpImage.SingleChannelImage[0].Data.Sum();
+                            AverageValue += TmpImage.SingleChannelImage[0].Data.Average();
                         }
 
                         IFW.GetOutPut().Dispose();
@@ -587,15 +649,6 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
             }
         }
 
-        private void buttonParse_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog OpenFolderDialog = new FolderBrowserDialog();
-            OpenFolderDialog.SelectedPath = this.textBoxImageRoot.Text;
-
-            if (OpenFolderDialog.ShowDialog() != DialogResult.OK) return;
-            this.textBoxImageRoot.Text = OpenFolderDialog.SelectedPath;
-        }
-
         private void treeViewForScreenInspection_AfterCheck(object sender, TreeViewEventArgs e)
         {
             this.treeViewForScreenInspection.AfterCheck -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewForScreenInspection_AfterCheck);
@@ -608,13 +661,16 @@ namespace HCSAnalyzer.Classes.ImageAnalysis.FormsForImages
 
         }
 
-        private void textBoxImageRoot_TextChanged(object sender, EventArgs e)
+        private void labelPlatform_DoubleClick(object sender, EventArgs e)
         {
-            cGlobalInfo.OptionsWindow.textBoxImageAccesImagePath.Text = this.textBoxImageRoot.Text;
+            cGlobalInfo.OptionsWindow.tabControlWindowOption.SelectedTab = cGlobalInfo.OptionsWindow.tabPageImageAccess;
+            cGlobalInfo.OptionsWindow.Visible = true;
         }
 
-
-
-
+        private void buttonChangeImagePlatform_Click(object sender, EventArgs e)
+        {
+            cGlobalInfo.OptionsWindow.tabControlWindowOption.SelectedTab = cGlobalInfo.OptionsWindow.tabPageImageAccess;
+            cGlobalInfo.OptionsWindow.Visible = true;
+        }
     }
 }

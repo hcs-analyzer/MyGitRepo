@@ -21,11 +21,20 @@ namespace HCSAnalyzer.Classes.General_Types
     public class cImageAccessor
     {
         public string InitialPath = "";
-        public eImagingPlatformType ImagingPlatformType;
+        eImagingPlatformType ImagingPlatformType;
         public int NumberOfChannels = 1;
         public int Field = 1;
         public bool IsThumbnail = false;
         // public List<cImageMetaInfo> ListImageMetaInfo = null;
+
+        public void SetUpImagingPlatFormType(eImagingPlatformType ImagingPlatformType)
+        {
+            this.ImagingPlatformType = ImagingPlatformType;
+        }
+        public eImagingPlatformType GetImagingPlatFormType()
+        {
+            return this.ImagingPlatformType;
+        }
 
         public cImageAccessor(eImagingPlatformType ImagingPlatformType)
         {
@@ -700,7 +709,7 @@ namespace HCSAnalyzer.Classes.General_Types
 
                 Name += "*Z01C*.tif";
 
-                string[] ListChannels = Directory.GetFiles(NewDir, Name, SearchOption.TopDirectoryOnly);
+                string[] ListChannels = Directory.GetFiles(NewDir, Name, SearchOption.AllDirectories);
                 //  if(NumberOfChannels>ListChannels.Count()) NumberOfChannels = ListChannels.Count();
                 NumberOfChannels = ListChannels.Count();
 
